@@ -17,11 +17,17 @@ class Item {
     public:
         Item(); 
         Item(int id, string name, string type, int quantity);
+
         int get_id();
-        int get_name();
-        int get_type();
+        string get_name();
+        string get_type();
         int get_quantity();
+
+        void set_id(int id);
+        void set_name(string name);
+        void set_type(string type);
         void set_quantity(int quantity);
+
         void add_quantity(int quantity);
         void remove_quantity(int quantity);
 
@@ -38,11 +44,14 @@ class NonTool : public Item {
     public:
         NonTool();
         NonTool(int id, string name, string type, int durability);
+
         int get_durability();
+
         void set_durability(int durability);
+
         void add_durability(int durability);
         void remove_durability(int durability);
-        
+
 };
 
 #endif
