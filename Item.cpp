@@ -13,16 +13,23 @@ Item::Item(int id, string name, string type, int quantity){
     this->quantity = quantity;
 }
 
-int Item::get_id(){
+Item::Item(const Item& t){
+    this->id = t.id;
+    this->name = t.name;
+    this->quantity = t.quantity;
+    this->type = t.type; 
+}
+
+int Item::get_id() const{
     return this->id;
 }
-string Item::get_name(){
+string Item::get_name() const{
     return this->name;
 }
-string Item::get_type(){
+string Item::get_type() const{
     return this->type;
 }
-int Item::get_quantity(){
+int Item::get_quantity() const{
     return this->quantity;
 }
 
@@ -48,14 +55,18 @@ void Item::remove_quantity(int quantity){
     this->set_quantity(this->get_quantity()-quantity);
 }
 
-Tool::Tool() : Item(){
+NonTool::NonTool() : Item(){
     
 }
-Tool::Tool(int id, string name, string type, int quantity) : Item(id, name, type, quantity){
+NonTool::NonTool(int id, string name, string type, int quantity) : Item(id, name, type, quantity){
 
 }
 
-void Tool::Stack(Item item_source, int quantity, Item item_destination){
+NonTool::NonTool(const NonTool& t) : Item(t){
+
+}
+
+void NonTool::Stack(Item item_source, int quantity, Item item_destination){
     if (item_source.get_id()!=item_destination.get_id()){
         // Implementasi Exception Handling
     } else {
@@ -74,24 +85,27 @@ void Tool::Stack(Item item_source, int quantity, Item item_destination){
     }
 }
 
-NonTool::NonTool() : Item(){
+Tool::Tool() : Item(){
 
 }
-NonTool::NonTool(int id, string name, string type, int durability) : Item(id, name, type, 1){
+Tool::Tool(int id, string name, string type, int durability) : Item(id, name, type, 1){
     this->durability = durability;
 }
 
-int NonTool::get_durability(){
+Tool::Tool(const Tool& t) : Item(t){
+    this->durability = t.durability;
+}
+int Tool::get_durability() const{
     return this->durability;
 }
 
-void NonTool::set_durability(int durability){
+void Tool::set_durability(int durability){
     this->durability = durability;
 }
 
-void NonTool::add_durability(int durability){
+void Tool::add_durability(int durability){
     this->set_durability((10, this->get_durability()+durability));
 }
-void NonTool::remove_durability(int durability){
+void Tool::remove_durability(int durability){
     this->set_durability(max(0, this->get_durability()-durability));
 }

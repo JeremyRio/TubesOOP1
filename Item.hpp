@@ -17,11 +17,11 @@ class Item {
     public:
         Item(); 
         Item(int id, string name, string type, int quantity);
-
-        int get_id();
-        string get_name();
-        string get_type();
-        int get_quantity();
+        Item(const Item& t);
+        int get_id() const;
+        string get_name() const;
+        string get_type() const;
+        int get_quantity() const;
 
         void set_id(int id);
         void set_name(string name);
@@ -32,20 +32,22 @@ class Item {
         void remove_quantity(int quantity);
 
 };
-class Tool : public Item {
+class NonTool : public Item {
     public:
-        Tool();
-        Tool(int id, string name, string type, int quantity);
+        NonTool();
+        NonTool(int id, string name, string type, int quantity);
+        NonTool(const NonTool& t);
         void Stack(Item item_source, int quantity, Item item_destination);
 };
-class NonTool : public Item {
+class Tool : public Item {
     private:
         int durability;
     public:
-        NonTool();
-        NonTool(int id, string name, string type, int durability);
+        Tool();
+        Tool(int id, string name, string type, int durability);
+        Tool(const Tool& t);
 
-        int get_durability();
+        int get_durability() const;
 
         void set_durability(int durability);
 
