@@ -10,26 +10,30 @@ using namespace std;
 
 int main()
 {
-    int i;
+    map<string, Item> inventory;
+    map<string, Item> crafting;
     map<string, Item> item_map;
     string config_path = "./config";
     string item_config_path = config_path + "/item.txt";
-    string array_line[4];
-    // read item from config file
+
     ifstream item_config_file(item_config_path);
-    for (string line; getline(item_config_file, line);) {
-        i = 0;
-        for (auto it = line.begin(); it != line.end(); it++) {
-            if (*it != ' ') {
-                array_line[i] += *it;
+    string line[4];
+    for (string lines; getline(item_config_file, lines);) {
+        int i = 0;
+        string temp;
+        for (auto it = lines.begin(); it != lines.end(); it++) {
+            if (*it != ' ' - 1) {
+                temp += *it;
             } else {
-                i++;
+                line[i++] = temp;
+                temp = "";
             }
         }
-        if (array_line[3] == "NONTOOL") {
-            item_map[array_line[1]] = NonTool(stoi(array_line[0]), array_line[1], array_line[2], NULL);
+        line[i] = temp;
+        if (line[3] == "TOOL") {
+            item_map[line[1]] = Tool(stoi(line[0]), line[1], line[2], stoi(line[3]));
         } else {
-            item_map[array_line[1]] = NonTool(stoi(array_line[0]), array_line[1], array_line[2], NULL);
+            item_map[line[1]] = NonTool(stoi(line[0]), line[1], line[2], stoi(line[3]));
         }
     }
 
