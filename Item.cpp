@@ -1,5 +1,5 @@
 #include "Item.hpp"
-
+#include <iostream>
 Item::Item(){
     this->id = 0;
     this->name = "-";
@@ -54,7 +54,13 @@ void Item::remove_quantity(int quantity){
     // Implementasi Exception Handling
     this->set_quantity(this->get_quantity()-quantity);
 }
-
+void Item::display_info(){
+    //easier checking
+    cout << "id: " << get_id() << "\n";
+    cout << "Name: " << get_name() << "\n";
+    cout << "Type: " << get_type() << "\n";
+    cout << "Quantity: " << get_quantity() << "\n";
+}
 NonTool::NonTool() : Item(){
     
 }
@@ -84,7 +90,11 @@ void NonTool::Stack(Item item_source, int quantity, Item item_destination){
         }
     }
 }
-
+void NonTool::display_info(){
+    //easier checking
+    cout << "Item: " << "Non Tool"<< endl;
+    Item::display_info();
+}
 Tool::Tool() : Item(){
 
 }
@@ -108,4 +118,9 @@ void Tool::add_durability(int durability){
 }
 void Tool::remove_durability(int durability){
     this->set_durability(max(0, this->get_durability()-durability));
+}
+void Tool::display_info(){
+    cout << "Item: Tool" << endl;
+    Item::display_info();
+    cout << "Durability: " << get_durability() <<endl;
 }

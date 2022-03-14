@@ -30,6 +30,7 @@ class Item {
 
         void add_quantity(int quantity);
         void remove_quantity(int quantity);
+        virtual void display_info();//check info item aja (dihapusin aja)
 
 };
 class NonTool : public Item {
@@ -38,6 +39,7 @@ class NonTool : public Item {
         NonTool(int id, string name, string type, int quantity);
         NonTool(const NonTool& t);
         void Stack(Item item_source, int quantity, Item item_destination);
+        void display_info();//check info item aja (dihapusin aja)
 };
 class Tool : public Item {
     private:
@@ -53,7 +55,7 @@ class Tool : public Item {
 
         void add_durability(int durability);
         void remove_durability(int durability);
-
+        void display_info();//check info item aja (dihapusin aja)
 };
 
 #endif
