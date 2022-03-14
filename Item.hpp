@@ -36,7 +36,7 @@ class Tool : public Item {
     public:
         Tool();
         Tool(int id, string name, string type, int quantity);
-
+        void Stack(Item item_source, int quantity, Item item_destination);
 };
 class NonTool : public Item {
     private:

@@ -55,6 +55,25 @@ Tool::Tool(int id, string name, string type, int quantity) : Item(id, name, type
 
 }
 
+void Tool::Stack(Item item_source, int quantity, Item item_destination){
+    if (item_source.get_id()!=item_destination.get_id()){
+        // Implementasi Exception Handling
+    } else {
+        if (item_source.get_quantity()<=quantity){
+            int temp = quantity + item_destination.get_quantity();
+            if (temp > 64){
+                item_destination.set_quantity(64);
+                item_source.set_quantity(item_source.get_quantity()-quantity+temp-64);
+            } else {
+                item_destination.set_quantity(item_destination.get_quantity()+quantity);
+                item_source.set_quantity(item_source.get_quantity()-quantity);
+            }
+        } else {
+            // Implementasi Exception Handling
+        }
+    }
+}
+
 NonTool::NonTool() : Item(){
 
 }
