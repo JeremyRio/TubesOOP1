@@ -1,21 +1,36 @@
 // sample main file, replace this with your own code
+#include "Item.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <string>
 
 using namespace std;
 
 int main()
 {
+    int i;
+    map<string, Item> item_map;
     string config_path = "./config";
     string item_config_path = config_path + "/item.txt";
-
+    string array_line[4];
     // read item from config file
     ifstream item_config_file(item_config_path);
     for (string line; getline(item_config_file, line);) {
-        cout << line << endl;
-        // do something
+        i = 0;
+        for (auto it = line.begin(); it != line.end(); it++) {
+            if (*it != ' ') {
+                array_line[i] += *it;
+            } else {
+                i++;
+            }
+        }
+        if (array_line[3] == "NONTOOL") {
+            item_map[array_line[1]] = NonTool(stoi(array_line[0]), array_line[1], array_line[2], NULL);
+        } else {
+            item_map[array_line[1]] = NonTool(stoi(array_line[0]), array_line[1], array_line[2], NULL);
+        }
     }
 
     // read recipes
