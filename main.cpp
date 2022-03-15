@@ -1,10 +1,11 @@
 // sample main file, replace this with your own code
 #include "Item.hpp"
+#include "Recipes.hpp"
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-
+#include <filesystem>
 using namespace std;
 
 int main()
@@ -14,6 +15,7 @@ int main()
     map<string, Item*> item_map;
     string config_path = "./config";
     string item_config_path = config_path + "/item.txt";
+    string recipe_config_path = config_path + "/recipe";
 
     ifstream item_config_file(item_config_path);
     string line[4];
@@ -36,13 +38,44 @@ int main()
         }
     }
     // checking if it works
-    for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {
-        it1->second->display_info();
-        cout << it1->first << endl << endl;
-    }
+    // for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {
+    //     it1->second->display_info();
+    //     cout << it1->first << endl << endl;
+    // }
     // read recipes
-
-
+    map<string, Recipes*> recipe_map;
+    for (const auto & filerecipe : filesystem::directory_iterator(recipe_config_path)){
+        ifstream recipe_config_file(filerecipe.path());
+        string tempr;
+        int cnt = 0;
+        int sum = 1;
+        string contain_recipes[14];
+        for (string recipe_lines; getline(recipe_config_file, recipe_lines);){
+            // Traverse the string
+            for (auto &ch : recipe_lines) {
+                if (ch == ' ') {
+                    contain_recipes[cnt] = tempr;
+                    tempr="";
+                    cnt++;
+                }
+                else tempr += ch;
+            }
+            contain_recipes[cnt] = tempr;
+            tempr="";
+            cnt++;
+        }
+        int size = stoi(contain_recipes[0])*stoi(contain_recipes[1]);
+        Recipes *r = new Recipes(stoi(contain_recipes[0]), stoi(contain_recipes[1]), contain_recipes[2+size], stoi(contain_recipes[3+size]));
+        for (int i = 2; i < 2+size ;i++){
+            (*r) << contain_recipes[i];
+        }
+        recipe_map[contain_recipes[2+size]] = r ;
+    }
+    // checking if it works
+    // for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
+    //     it1->second->print_info();
+    //     cout << it1->first << endl;
+    // }    
     // sample interaction
     // string command;
     // while (cin >> command) {
