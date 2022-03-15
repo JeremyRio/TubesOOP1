@@ -1,10 +1,11 @@
 #include "Item.hpp"
 #include <iostream>
+
 Item::Item(){
     this->id = 0;
     this->name = "-";
     this->type = "-";
-    this->quantity = 1;
+    this->quantity = 0;
 }
 Item::Item(int id, string name, string type, int quantity){
     this->id = id;
@@ -47,11 +48,15 @@ void Item::set_quantity(int quantity){
 }
 
 void Item::add_quantity(int quantity){
-    // Implementasi Exception Handling
+    if (this->get_quantity()+quantity > MAX_QTY){
+        // throw Exception: item kelebihan
+    }
     this->set_quantity(this->get_quantity()+quantity);
 }
 void Item::remove_quantity(int quantity){
-    // Implementasi Exception Handling
+    if (this->get_quantity()-quantity < 0){
+        // throw Exception: item kekurangan
+    }
     this->set_quantity(this->get_quantity()-quantity);
 }
 void Item::display_info(){
@@ -74,7 +79,7 @@ NonTool::NonTool(const NonTool& t) : Item(t){
 
 void NonTool::Stack(Item item_source, int quantity, Item item_destination){
     if (item_source.get_id()!=item_destination.get_id()){
-        // Implementasi Exception Handling
+        // throw Exception: ID item beda
     } else {
         if (item_source.get_quantity()<=quantity){
             int temp = quantity + item_destination.get_quantity();
@@ -86,7 +91,8 @@ void NonTool::Stack(Item item_source, int quantity, Item item_destination){
                 item_source.set_quantity(item_source.get_quantity()-quantity);
             }
         } else {
-            // Implementasi Exception Handling
+            // throw Exception:
+            // jumlah yang diminta buat dipindah lebih dari jumlah item yang ada
         }
     }
 }
@@ -114,7 +120,7 @@ void Tool::set_durability(int durability){
 }
 
 void Tool::add_durability(int durability){
-    this->set_durability((10, this->get_durability()+durability));
+    this->set_durability(min(10, this->get_durability()+durability));
 }
 void Tool::remove_durability(int durability){
     this->set_durability(max(0, this->get_durability()-durability));
