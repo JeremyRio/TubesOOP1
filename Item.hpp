@@ -13,6 +13,7 @@ class Item {
     string name;
     string type;
     int quantity;
+    bool tool;
 
     public:
     Item();
@@ -23,6 +24,8 @@ class Item {
     string get_name() const;
     string get_type() const;
     int get_quantity() const;
+    bool get_tool() const;
+
     void set_id(int id);
     void set_name(string name);
     void set_type(string type);
@@ -32,15 +35,18 @@ class Item {
     void remove_quantity(int quantity);
     virtual void display_info();  // check info item aja (dihapusin aja)
 };
+
 class NonTool : public Item {
     public:
     NonTool();
     NonTool(int id, string name, string type, int quantity);
     NonTool(const NonTool &t);
+    NonTool(const Item &item);
     NonTool &operator=(const NonTool &t);
     void Stack(Item item_source, int quantity, Item item_destination);
     void display_info();  // check info item aja (dihapusin aja)
 };
+
 class Tool : public Item {
     private:
     int durability;
@@ -51,9 +57,7 @@ class Tool : public Item {
     Tool(const Tool &t);
     Tool &operator=(const Tool &t);
     int get_durability() const;
-
     void set_durability(int durability);
-
     void add_durability(int durability);
     void remove_durability(int durability);
     void display_info();  // check info item aja (dihapusin aja)

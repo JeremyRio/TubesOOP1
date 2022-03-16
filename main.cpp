@@ -1,17 +1,43 @@
 // sample main file, replace this with your own code
-#include "Item.hpp"
-#include "Recipes.hpp"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-#include <filesystem>
+
+#include "Item.hpp"
+#include "Recipes.hpp"
+
 using namespace std;
 
-int main()
-{
-    map<string, Item> inventory;
-    map<string, Item> crafting;
+class Inventory {
+    private:
+    Item** items;
+
+    public:
+    Inventory() {
+        items = new Item*[27];
+    }
+
+    void Add(int idx, Item* item) {
+        if (items[idx]->get_quantity() == 0) {
+            delete items[idx];
+            if (item->get_tool()) {
+                items[idx] = new Tool(*(Tool*)item);
+            } else {
+                items[idx] = new NonTool(*(NonTool*)item);
+            }
+        } else {
+            // Stack atau Swap item
+        }
+    }
+
+    Item& operator[](int idx) {
+        return *items[idx];
+    }
+};
+
+main() {
     map<string, Item*> item_map;
     string config_path = "./config";
     string item_config_path = config_path + "/item.txt";
@@ -19,12 +45,12 @@ int main()
 
     ifstream item_config_file(item_config_path);
     string line[4];
-    for (string lines; getline(item_config_file, lines);) {
+    for (string item_line; getline(item_config_file, item_line);) {
         int i = 0;
         string temp;
-        for (auto it = lines.begin(); it != lines.end(); it++) {
-            if (*it != ' ') {
-                temp += *it;
+        for (auto& ch : item_line) {
+            if (ch != ' ') {
+                temp += ch;
             } else {
                 line[i++] = temp;
                 temp = "";
@@ -37,45 +63,50 @@ int main()
             item_map[line[1]] = new NonTool(stoi(line[0]), line[1], line[2], 1);
         }
     }
+
     // checking if it works
     // for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {
     //     it1->second->display_info();
-    //     cout << it1->first << endl << endl;
+    //     cout << it1->first << endl
+    //          << endl;
     // }
+
     // read recipes
     map<string, Recipes*> recipe_map;
-    for (const auto & filerecipe : filesystem::directory_iterator(recipe_config_path)){
+    for (const auto& filerecipe : filesystem::directory_iterator(recipe_config_path)) {
         ifstream recipe_config_file(filerecipe.path());
         string tempr;
         int cnt = 0;
         int sum = 1;
         string contain_recipes[14];
-        for (string recipe_lines; getline(recipe_config_file, recipe_lines);){
+        for (string recipe_lines; getline(recipe_config_file, recipe_lines);) {
             // Traverse the string
-            for (auto &ch : recipe_lines) {
+            for (auto& ch : recipe_lines) {
                 if (ch == ' ') {
                     contain_recipes[cnt] = tempr;
-                    tempr="";
+                    tempr = "";
                     cnt++;
-                }
-                else tempr += ch;
+                } else
+                    tempr += ch;
             }
             contain_recipes[cnt] = tempr;
-            tempr="";
+            tempr = "";
             cnt++;
         }
-        int size = stoi(contain_recipes[0])*stoi(contain_recipes[1]);
-        Recipes *r = new Recipes(stoi(contain_recipes[0]), stoi(contain_recipes[1]), contain_recipes[2+size], stoi(contain_recipes[3+size]));
-        for (int i = 2; i < 2+size ;i++){
+        int size = stoi(contain_recipes[0]) * stoi(contain_recipes[1]);
+        Recipes* r = new Recipes(stoi(contain_recipes[0]), stoi(contain_recipes[1]), contain_recipes[2 + size], stoi(contain_recipes[3 + size]));
+        for (int i = 2; i < 2 + size; i++) {
             (*r) << contain_recipes[i];
         }
-        recipe_map[contain_recipes[2+size]] = r ;
+        recipe_map[contain_recipes[2 + size]] = r;
     }
+
     // checking if it works
     // for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
     //     it1->second->print_info();
     //     cout << it1->first << endl;
-    // }    
+    // }
+
     // sample interaction
     // string command;
     // while (cin >> command) {
