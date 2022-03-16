@@ -17,6 +17,9 @@ class Inventory {
     public:
     Inventory() {
         items = new Item*[27];
+        for (int i = 0; i < 27; i++) {
+            items[i] = new Item();
+        }
     }
 
     void Add(int idx, Item* item) {
@@ -34,6 +37,23 @@ class Inventory {
 
     Item& operator[](int idx) {
         return *items[idx];
+    }
+
+    void Display() {
+        for (int i = 0; i < 27; i++) {
+            cout << "[ ";
+            if (items[i]->get_quantity() > 0) {
+                cout << items[i]->get_name() << " (" << items[i]->get_quantity() << ")";
+            } else {
+                cout << "EMPTY";
+            }
+            cout << " ]";
+            if (i == 8 || i == 17) {
+                cout << endl;
+            } else {
+                cout << " ";
+            }
+        }
     }
 };
 
@@ -63,6 +83,13 @@ main() {
             item_map[line[1]] = new NonTool(stoi(line[0]), line[1], line[2], 1);
         }
     }
+
+    // check inventory
+    Inventory inventory;
+    inventory.Add(3, item_map["OAK_LOG"]);
+    inventory.Add(4, item_map["IRON_AXE"]);
+    inventory[3].set_quantity(5);
+    inventory.Display();
 
     // checking if it works
     // for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {

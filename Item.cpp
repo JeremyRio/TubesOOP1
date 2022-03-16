@@ -7,6 +7,7 @@ Item::Item() {
     this->name = "-";
     this->type = "-";
     this->quantity = 0;
+    this->tool = false;
 }
 
 Item::Item(int id, string name, string type, int quantity) {
@@ -14,6 +15,7 @@ Item::Item(int id, string name, string type, int quantity) {
     this->name = name;
     this->type = type;
     this->quantity = quantity;
+    this->tool = false;
 }
 
 Item::Item(const Item &t) {
@@ -21,6 +23,7 @@ Item::Item(const Item &t) {
     this->name = t.name;
     this->quantity = t.quantity;
     this->type = t.type;
+    this->tool = false;
 }
 
 Item &Item::operator=(const Item &item) {
@@ -28,6 +31,7 @@ Item &Item::operator=(const Item &item) {
     this->name = item.name;
     this->quantity = item.quantity;
     this->type = item.type;
+    this->tool = item.tool;
     return *this;
 }
 
@@ -87,6 +91,7 @@ void Item::display_info() {
     cout << "Name: " << get_name() << "\n";
     cout << "Type: " << get_type() << "\n";
     cout << "Quantity: " << get_quantity() << "\n";
+    cout << "Tool: " << get_tool() << "\n";
 }
 
 NonTool::NonTool()
