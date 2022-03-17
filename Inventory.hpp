@@ -1,15 +1,19 @@
 #include <iostream>
 
 #include "Item.hpp"
+#define MAX_QTY 64
+#define MAX_INVENTORY 27
 
 class Inventory {
     private:
     Item** items;
+    int size;
 
     public:
     Inventory() {
-        items = new Item*[27];
-        for (int i = 0; i < 27; i++) {
+        size = 0;
+        items = new Item*[MAX_INVENTORY];
+        for (int i = 0; i < MAX_INVENTORY; i++) {
             items[i] = new Item();
         }
     }
@@ -22,6 +26,7 @@ class Inventory {
             } else {
                 items[idx] = new NonTool(*(NonTool*)item);
             }
+            this->size++;
         } else {
             // Stack atau Swap item
         }
@@ -31,8 +36,43 @@ class Inventory {
         return *items[idx];
     }
 
+    void AddQuantity(int idx, int& remainder_qty) {
+        int total_quantity = items[idx]->get_quantity() + remainder_qty;
+        if (total_quantity > MAX_QTY) {
+            remainder_qty = total_quantity - MAX_QTY;
+            total_quantity = MAX_QTY;
+        } else {
+            remainder_qty = 0;
+        }
+        items[idx]->set_quantity(total_quantity);
+    }
+
+    int GetEmptySlot() {
+        if (!this->isFull()) {
+            for (int i = 0; i < MAX_INVENTORY; i++) {
+                if (items[i]->get_quantity() == 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int FindItemNotFull(string item_name) {
+        for (int i = 0; i < MAX_INVENTORY; i++) {
+            if (items[i]->get_name() == item_name && items[i]->get_quantity() < MAX_QTY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    bool isFull() {
+        return this->size == MAX_INVENTORY;
+    }
+
     void Display() {
-        for (int i = 0; i < 27; i++) {
+        for (int i = 0; i < MAX_INVENTORY; i++) {
             cout << "[ ";
             if (items[i]->get_quantity() > 0) {
                 cout << items[i]->get_name() << " (" << items[i]->get_quantity() << ")";
@@ -46,5 +86,6 @@ class Inventory {
                 cout << " ";
             }
         }
+        cout << endl;
     }
 };

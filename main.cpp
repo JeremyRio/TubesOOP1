@@ -34,17 +34,17 @@ int main() {
         if (line[3] == "TOOL") {
             item_map[line[1]] = new Tool(stoi(line[0]), line[1], line[2], 10);
         } else {
-            item_map[line[1]] = new NonTool(stoi(line[0]), line[1], line[2], 1);
+            item_map[line[1]] = new NonTool(stoi(line[0]), line[1], line[2], 0);
         }
     }
 
     // check inventory
-    Inventory inventory;
-    inventory.Add(3, item_map["OAK_LOG"]);
-    inventory.Add(4, item_map["IRON_AXE"]);
-    inventory[3].set_quantity(5);
-    inventory[3].display_info();
-    inventory.Display();
+    // Inventory inventory;
+    // inventory.Add(3, item_map["OAK_LOG"]);
+    // inventory.Add(4, item_map["IRON_AXE"]);
+    // inventory[3].set_quantity(5);
+    // inventory[3].display_info();
+    // inventory.Display();
 
     // checking if it works
     // for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {
@@ -90,39 +90,72 @@ int main() {
     // }
 
     // sample interaction
-    // string command;
-    // while (cin >> command) {
-    //     if (command == "EXPORT") {
-    //         string output_path;
-    //         cin >> output_path;
-    //         ofstream output_file(output_path);
+    string command;
+    Inventory inventory;
+    while (true) {
+        cout << "\nInventory:\n";
+        inventory.Display();
+        cout << endl;
+        cout << "COMMAND >>> ";
+        cin >> command;
+        if (command == "EXPORT") {
+            string output_path;
+            cin >> output_path;
+            ofstream output_file(output_path);
 
-    //         // hardcode for first test case
-    //         output_file << "21:10" << endl;
-    //         output_file << "6:1" << endl;
-    //         for (int i = 2; i < 27; i++) {
-    //             output_file << "0:0" << endl;
-    //         }
+            // hardcode for first test case
+            output_file << "21:10" << endl;
+            output_file << "6:1" << endl;
+            for (int i = 2; i < 27; i++) {
+                output_file << "0:0" << endl;
+            }
 
-    //         cout << "Exported" << endl;
-    //     } else if (command == "CRAFT") {
-    //         cout << "TODO" << endl;
-    //     } else if (command == "GIVE") {
-    //         string item_name;
-    //         int item_qty;
-    //         cin >> item_name >> item_qty;
-    //         cout << "TODO" << endl;
-    //     } else if (command == "MOVE") {
-    //         string slot_src;
-    //         int slot_qty;
-    //         string slot_dest;
-    //         // need to handle multiple destinations
-    //         cin >> slot_src >> slot_qty >> slot_dest;
-    //         cout << "TODO" << endl;
-    //     } else {
-    //         // todo
-    //         cout << "Invalid command" << endl;
-    //     }
-    // }
+            cout << "Exported" << endl;
+        } else if (command == "CRAFT") {
+            cout << "TODO" << endl;
+        } else if (command == "GIVE") {
+            string item_name;
+            int item_qty;
+            cin >> item_name >> item_qty;
+
+            // Algo Sementara
+            if (item_map.find(item_name) != item_map.end()) {
+                bool stop = false;
+                while (item_qty > 0 && !stop) {
+                    if (inventory.isFull()) {
+                        // throw exception inventory is full
+                        stop = true;
+                    } else {
+                        int idx_item = inventory.FindItemNotFull(item_name);
+                        if (idx_item != -1) {
+                            // item found
+                            inventory.AddQuantity(idx_item, item_qty);
+                        } else {
+                            idx_item = inventory.GetEmptySlot();
+                            if (idx_item != -1) {
+                                // item not found, add empty slot
+                                inventory.Add(idx_item, item_map[item_name]);
+                                inventory.AddQuantity(idx_item, item_qty);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // throw exception
+                // Nama Item Tidak Ada
+            }
+
+        } else if (command == "MOVE") {
+            string slot_src;
+            int slot_qty;
+            string slot_dest;
+            // need to handle multiple destinations
+            cin >> slot_src >> slot_qty >> slot_dest;
+
+        } else {
+            // todo
+            cout << "Invalid command" << endl;
+        }
+    }
     return 0;
 }
