@@ -3,7 +3,7 @@
 #include "Item.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
-
+#define MAX_CRAFT 9
 class Inventory {
     private:
     Item** items;
@@ -12,8 +12,8 @@ class Inventory {
     public:
     Inventory() {
         size = 0;
-        items = new Item*[MAX_INVENTORY];
-        for (int i = 0; i < MAX_INVENTORY; i++) {
+        items = new Item*[MAX_INVENTORY + MAX_CRAFT];
+        for (int i = 0; i < MAX_INVENTORY + MAX_CRAFT; i++) {
             items[i] = new Item();
         }
     }
@@ -83,20 +83,36 @@ class Inventory {
     }
 
     void Display() {
-        for (int i = 0; i < MAX_INVENTORY; i++) {
-            cout << "[ ";
-            if (items[i]->get_quantity() > 0) {
-                cout << items[i]->get_name() << " (" << items[i]->get_quantity() << ")";
-            } else {
-                cout << "EMPTY";
-            }
-            cout << " ]";
-            if (i == 8 || i == 17) {
-                cout << endl;
-            } else {
-                cout << " ";
-            }
+        // Displaying Craft Table
+        for (int i = MAX_INVENTORY; i < 36; i++) {
+            cout << "[C " << (i-27) << "]";
+            if (i == 29 || i == 32 || i == 35) { cout << endl; }
         }
         cout << endl;
+        // Displaying Inventory Slot
+        for (int i = 0; i < MAX_INVENTORY; i++) {
+            cout << "[I";
+            if (i < 10) {cout << " "; }
+            cout << i << "]";
+            if (i == 8 || i == 17) {cout << endl;}
+            else {cout << " ";}
+        }
+    }
+
+    void Show(){
+        Display();
+        cout << endl << "\nCraft Slot" << endl;
+        for (int i = MAX_INVENTORY; i < 36; i++){
+            if (items[i]->get_quantity() > 0) {
+                cout << "C" << (i-MAX_INVENTORY) << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
+            } 
+            //else {cout << "EMPTY";}
+        }
+        cout << endl << "Inventory Slot" << endl;
+        for (int i = 0; i < MAX_INVENTORY; i++){
+            if (items[i]->get_quantity() > 0) {
+                cout << "I" << i << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
+            } 
+        }
     }
 };

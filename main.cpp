@@ -88,7 +88,7 @@ int main() {
     //     it1->second->print_info();
     //     cout << it1->first << endl;
     // }
-
+    
     // sample interaction
     string command;
     Inventory inventory;
