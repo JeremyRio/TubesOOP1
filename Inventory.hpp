@@ -18,17 +18,85 @@ class Inventory {
         }
     }
 
+    bool IsEmpty(int idx){
+        return items[idx]->get_quantity() == 0;
+    }
+
+    bool IsTool(Item* item){
+        return (typeid(item) == typeid(Tool));
+    }
+
+    void ReplaceSlot(int idx, Item* item){
+        delete items[idx];
+        if (IsTool(item)) {
+            items[idx] = new Tool(*(Tool*)item);
+        } else {
+            items[idx] = new NonTool(*(NonTool*)item);
+        }
+    }
+
     void Add(int idx, Item* item) {
-        if (items[idx]->get_quantity() == 0) {
-            delete items[idx];
-            if (typeid(item) == typeid(Tool)) {
-                items[idx] = new Tool(*(Tool*)item);
-            } else {
-                items[idx] = new NonTool(*(NonTool*)item);
-            }
+        if (IsEmpty(idx)) {
+            ReplaceSlot(idx, item);
             this->size++;
         } else {
             // Stack atau Swap item
+            // Komen: Kayaknya Stack atau Swap item bukan disini, tapi di Move
+        }
+    }
+
+    // Swap isi dari 2 tempat di inventory/crafting table
+    void Swap(int idxSource, int idxDest) {
+        Item* temp = items[idxDest];
+        ReplaceSlot(idxDest, items[idxSource]);
+        ReplaceSlot(idxSource, temp);
+    }
+
+    // Memindahkan suatu item dari suatu tempat ke tempat lain
+    void Move(int idxSource, int quantity, int idxDest) {
+        if (quantity == 0){ return; }
+        // Tidak ada yang berubah, jumlah item yang dipindahkan sebanyak 0
+        if (quantity < 0) {
+            // throw Exception:
+            // jumlah yang dipindahkan tidak boleh negatif
+        }
+        if (quantity > items[idxSource]->get_quantity()) {
+            // throw Exception:
+            // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
+        }
+        if (IsEmpty(idxDest)){ // Jika slot kosong, isi item
+            items[idxSource]->remove_quantity(quantity);
+            ReplaceSlot(idxDest, items[idxSource]);
+            items[idxDest]->set_quantity(quantity);
+        } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])){
+            if (quantity != items[idxSource]->get_quantity() && !IsTool(items[idxSource])) {
+                // throw Exception:
+                // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
+            }
+            Swap(idxSource, idxDest);
+        } else if (items[idxSource]->get_id() != items[idxDest]->get_id()) { // Keduanya NonTool, ID beda
+            if (quantity != items[idxSource]->get_quantity()) {
+                // throw Exception:
+                // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
+            }
+            Swap(idxSource, idxDest);
+        } else { // NonTool dengan ID sama
+            if (items[idxDest]->get_quantity() == 64){ return; }
+            // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
+            // Stacking
+            Stack(idxSource, quantity, idxDest);
+        }
+    }
+
+    // Melakukan stacking, dipanggil di Move
+    void Stack(int idxSource, int quantity, int idxDest){
+        if (items[idxDest]->get_quantity() + quantity > 64){
+            int maxAmountToMove = 64 - items[idxDest]->get_quantity();
+            items[idxSource]->remove_quantity(maxAmountToMove);
+            items[idxDest]->add_quantity(maxAmountToMove);
+        } else {
+            items[idxSource]->remove_quantity(quantity);
+            items[idxDest]->add_quantity(quantity);
         }
     }
 
@@ -61,7 +129,7 @@ class Inventory {
     int GetEmptySlot() {
         if (!this->isFull()) {
             for (int i = 0; i < MAX_INVENTORY; i++) {
-                if (items[i]->get_quantity() == 0) {
+                if (IsEmpty(i)) {
                     return i;
                 }
             }
