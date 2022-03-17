@@ -32,6 +32,17 @@ class Inventory {
         }
     }
 
+    Item& operator[](string id) {
+        if (id[0] == 'I') {
+            string temp;
+            for (int i = 1; i < id.length(); i++) {
+                temp += id[i];
+            }
+            int idx = stoi(temp);
+            return *items[idx];
+        }
+    }
+
     Item& operator[](int idx) {
         return *items[idx];
     }
