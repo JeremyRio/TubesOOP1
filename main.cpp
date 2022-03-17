@@ -43,6 +43,7 @@ int main() {
     inventory.Add(3, item_map["OAK_LOG"]);
     inventory.Add(4, item_map["IRON_AXE"]);
     inventory[3].set_quantity(5);
+    inventory[3].display_info();
     inventory.Display();
 
     // checking if it works

@@ -13,7 +13,6 @@ class Item {
     string name;
     string type;
     int quantity;
-    bool tool;
 
     public:
     Item();
@@ -24,7 +23,6 @@ class Item {
     string get_name() const;
     string get_type() const;
     int get_quantity() const;
-    bool get_tool() const;
 
     void set_id(int id);
     void set_name(string name);

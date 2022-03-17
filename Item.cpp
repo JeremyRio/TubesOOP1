@@ -7,7 +7,6 @@ Item::Item() {
     this->name = "-";
     this->type = "-";
     this->quantity = 0;
-    this->tool = false;
 }
 
 Item::Item(int id, string name, string type, int quantity) {
@@ -15,7 +14,6 @@ Item::Item(int id, string name, string type, int quantity) {
     this->name = name;
     this->type = type;
     this->quantity = quantity;
-    this->tool = false;
 }
 
 Item::Item(const Item &t) {
@@ -23,7 +21,6 @@ Item::Item(const Item &t) {
     this->name = t.name;
     this->quantity = t.quantity;
     this->type = t.type;
-    this->tool = false;
 }
 
 Item &Item::operator=(const Item &item) {
@@ -31,7 +28,6 @@ Item &Item::operator=(const Item &item) {
     this->name = item.name;
     this->quantity = item.quantity;
     this->type = item.type;
-    this->tool = item.tool;
     return *this;
 }
 
@@ -49,10 +45,6 @@ string Item::get_type() const {
 
 int Item::get_quantity() const {
     return this->quantity;
-}
-
-bool Item::get_tool() const {
-    return this->tool;
 }
 
 void Item::set_id(int id) {
@@ -91,22 +83,18 @@ void Item::display_info() {
     cout << "Name: " << get_name() << "\n";
     cout << "Type: " << get_type() << "\n";
     cout << "Quantity: " << get_quantity() << "\n";
-    cout << "Tool: " << get_tool() << "\n";
 }
 
 NonTool::NonTool()
     : Item() {
-    this->tool = false;
 }
 
 NonTool::NonTool(int id, string name, string type, int quantity)
     : Item(id, name, type, quantity) {
-    this->tool = false;
 }
 
 NonTool::NonTool(const NonTool &t)
     : Item(t) {
-    this->tool = false;
 }
 
 NonTool &NonTool::operator=(const NonTool &nt) {
@@ -114,7 +102,6 @@ NonTool &NonTool::operator=(const NonTool &nt) {
     this->name = nt.name;
     this->quantity = nt.quantity;
     this->type = nt.type;
-    this->tool = nt.tool;
     return *this;
 }
 
@@ -147,19 +134,16 @@ void NonTool::display_info() {
 
 Tool::Tool()
     : Item() {
-    this->tool = true;
 }
 
 Tool::Tool(int id, string name, string type, int durability)
     : Item(id, name, type, 1) {
     this->durability = durability;
-    this->tool = true;
 }
 
 Tool::Tool(const Tool &t)
     : Item(t) {
     this->durability = t.durability;
-    this->tool = true;
 }
 
 Tool &Tool::operator=(const Tool &t) {
@@ -168,7 +152,6 @@ Tool &Tool::operator=(const Tool &t) {
     this->quantity = t.quantity;
     this->type = t.type;
     this->durability = t.durability;
-    this->tool = t.tool;
     return *this;
 }
 

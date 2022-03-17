@@ -1,3 +1,7 @@
+#include <iostream>
+
+#include "Item.hpp"
+
 class Inventory {
     private:
     Item** items;
@@ -13,7 +17,7 @@ class Inventory {
     void Add(int idx, Item* item) {
         if (items[idx]->get_quantity() == 0) {
             delete items[idx];
-            if (item->get_tool()) {
+            if (typeid(item) == typeid(Tool)) {
                 items[idx] = new Tool(*(Tool*)item);
             } else {
                 items[idx] = new NonTool(*(NonTool*)item);
