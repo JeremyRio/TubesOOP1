@@ -40,6 +40,11 @@ class Inventory {
             ReplaceSlot(idx, item);
             this->size++;
         } else {
+            if (IsTool(items[idx]) || items[idx]->get_id() != item->get_id()){
+                // throw Exception:
+                // Tidak dapat menambahkan item pada ID berbeda atau pada item Tool
+            }
+            items[idx]->add_quantity(item->get_quantity());
             // Stack atau Swap item
             // Komen: Kayaknya Stack atau Swap item bukan disini, tapi di Move
         }
@@ -54,12 +59,20 @@ class Inventory {
             // Jumlah item yang akan dibuang melebihi jumlah item yang ada
         } else {
             items[idx]->remove_quantity(item_qty);
+            if (items[idx]->get_quantity() == 0){
+                this->size--;
+            }
         }
     }
 
     // Swap isi dari 2 tempat di inventory/crafting table
     void Swap(int idxSource, int idxDest) {
-        Item* temp = items[idxDest];
+        Item* temp;
+        if (IsTool(items[idxDest])) {
+            temp = new Tool(*(Tool*)items[idxDest]);
+        } else {
+            temp = new NonTool(*(NonTool*)items[idxDest]);
+        }
         ReplaceSlot(idxDest, items[idxSource]);
         ReplaceSlot(idxSource, temp);
     }
@@ -80,8 +93,12 @@ class Inventory {
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             items[idxSource]->remove_quantity(quantity);
+            if (items[idxSource]->get_quantity() == 0){
+                this->size--;
+            }
             ReplaceSlot(idxDest, items[idxSource]);
             items[idxDest]->set_quantity(quantity);
+            this->size++;
         } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])) {
             if (quantity != items[idxSource]->get_quantity() && !IsTool(items[idxSource])) {
                 // throw Exception:
@@ -105,6 +122,7 @@ class Inventory {
     }
 
     // Melakukan stacking, dipanggil di Move
+    // Kondisi awal: NonTool dengan ID yang sama
     void Stack(int idxSource, int quantity, int idxDest) {
         if (items[idxDest]->get_quantity() + quantity > 64) {
             int maxAmountToMove = 64 - items[idxDest]->get_quantity();
@@ -112,6 +130,9 @@ class Inventory {
             items[idxDest]->add_quantity(maxAmountToMove);
         } else {
             items[idxSource]->remove_quantity(quantity);
+            if (items[idxSource]->get_quantity() == 0){
+                this->size--;
+            }
             items[idxDest]->add_quantity(quantity);
         }
     }
