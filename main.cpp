@@ -88,13 +88,13 @@ int main() {
     //     it1->second->print_info();
     //     cout << it1->first << endl;
     // }
-    
+
     // sample interaction
     string command;
     Inventory inventory;
     while (true) {
         cout << "\nInventory:\n";
-        inventory.Display();
+        inventory.Show();
         cout << endl;
         cout << "COMMAND >>> ";
         cin >> command;
@@ -118,31 +118,41 @@ int main() {
             int item_qty;
             cin >> item_name >> item_qty;
 
-            // Algo Sementara
             if (item_map.find(item_name) != item_map.end()) {
                 bool stop = false;
+                int idx_item;
                 while (item_qty > 0 && !stop) {
                     if (inventory.isFull()) {
-                        // throw exception inventory is full
+                        // throw Exception:
+                        // inventory sudah full, item terbuang: {item_qty}
                         stop = true;
                     } else {
-                        int idx_item = inventory.FindItemNotFull(item_name);
-                        if (idx_item != -1) {
-                            // item found
-                            inventory.AddQuantity(idx_item, item_qty);
-                        } else {
+                        if (Inventory::IsTool(item_map[item_name])) {
                             idx_item = inventory.GetEmptySlot();
                             if (idx_item != -1) {
                                 // item not found, add empty slot
                                 inventory.Add(idx_item, item_map[item_name]);
+                                item_qty--;
+                            }
+                        } else {
+                            idx_item = inventory.FindItemNotFull(item_name);
+                            if (idx_item == -1) {
+                                idx_item = inventory.GetEmptySlot();
+                                if (idx_item != -1) {
+                                    // item not found, add empty slot
+                                    inventory.Add(idx_item, item_map[item_name]);
+                                    inventory.AddQuantity(idx_item, item_qty);
+                                }
+                            } else {
+                                // item found
                                 inventory.AddQuantity(idx_item, item_qty);
                             }
                         }
                     }
                 }
             } else {
-                // throw exception
-                // Nama Item Tidak Ada
+                // throw Exception:
+                // Tidak ada nama Item {item_name}
             }
 
         } else if (command == "MOVE") {

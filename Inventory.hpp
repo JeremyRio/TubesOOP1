@@ -18,15 +18,15 @@ class Inventory {
         }
     }
 
-    bool IsEmpty(int idx){
+    bool IsEmpty(int idx) {
         return items[idx]->get_quantity() == 0;
     }
 
-    bool IsTool(Item* item){
-        return (typeid(item) == typeid(Tool));
+    static bool IsTool(Item* item) {
+        return (typeid(*item) == typeid(Tool));
     }
 
-    void ReplaceSlot(int idx, Item* item){
+    void ReplaceSlot(int idx, Item* item) {
         delete items[idx];
         if (IsTool(item)) {
             items[idx] = new Tool(*(Tool*)item);
@@ -54,7 +54,9 @@ class Inventory {
 
     // Memindahkan suatu item dari suatu tempat ke tempat lain
     void Move(int idxSource, int quantity, int idxDest) {
-        if (quantity == 0){ return; }
+        if (quantity == 0) {
+            return;
+        }
         // Tidak ada yang berubah, jumlah item yang dipindahkan sebanyak 0
         if (quantity < 0) {
             // throw Exception:
@@ -64,24 +66,26 @@ class Inventory {
             // throw Exception:
             // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
         }
-        if (IsEmpty(idxDest)){ // Jika slot kosong, isi item
+        if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             items[idxSource]->remove_quantity(quantity);
             ReplaceSlot(idxDest, items[idxSource]);
             items[idxDest]->set_quantity(quantity);
-        } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])){
+        } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])) {
             if (quantity != items[idxSource]->get_quantity() && !IsTool(items[idxSource])) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
             }
             Swap(idxSource, idxDest);
-        } else if (items[idxSource]->get_id() != items[idxDest]->get_id()) { // Keduanya NonTool, ID beda
+        } else if (items[idxSource]->get_id() != items[idxDest]->get_id()) {  // Keduanya NonTool, ID beda
             if (quantity != items[idxSource]->get_quantity()) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
             }
             Swap(idxSource, idxDest);
-        } else { // NonTool dengan ID sama
-            if (items[idxDest]->get_quantity() == 64){ return; }
+        } else {  // NonTool dengan ID sama
+            if (items[idxDest]->get_quantity() == 64) {
+                return;
+            }
             // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
             // Stacking
             Stack(idxSource, quantity, idxDest);
@@ -89,8 +93,8 @@ class Inventory {
     }
 
     // Melakukan stacking, dipanggil di Move
-    void Stack(int idxSource, int quantity, int idxDest){
-        if (items[idxDest]->get_quantity() + quantity > 64){
+    void Stack(int idxSource, int quantity, int idxDest) {
+        if (items[idxDest]->get_quantity() + quantity > 64) {
             int maxAmountToMove = 64 - items[idxDest]->get_quantity();
             items[idxSource]->remove_quantity(maxAmountToMove);
             items[idxDest]->add_quantity(maxAmountToMove);
@@ -153,34 +157,43 @@ class Inventory {
     void Display() {
         // Displaying Craft Table
         for (int i = MAX_INVENTORY; i < 36; i++) {
-            cout << "[C " << (i-27) << "]";
-            if (i == 29 || i == 32 || i == 35) { cout << endl; }
+            cout << "[C " << (i - 27) << "]";
+            if (i == 29 || i == 32 || i == 35) {
+                cout << endl;
+            }
         }
         cout << endl;
         // Displaying Inventory Slot
         for (int i = 0; i < MAX_INVENTORY; i++) {
             cout << "[I";
-            if (i < 10) {cout << " "; }
+            if (i < 10) {
+                cout << " ";
+            }
             cout << i << "]";
-            if (i == 8 || i == 17) {cout << endl;}
-            else {cout << " ";}
+            if (i == 8 || i == 17) {
+                cout << endl;
+            } else {
+                cout << " ";
+            }
         }
     }
 
-    void Show(){
+    void Show() {
         Display();
-        cout << endl << "\nCraft Slot" << endl;
-        for (int i = MAX_INVENTORY; i < 36; i++){
+        cout << endl
+             << "\nCraft Slot" << endl;
+        for (int i = MAX_INVENTORY; i < 36; i++) {
             if (items[i]->get_quantity() > 0) {
-                cout << "C" << (i-MAX_INVENTORY) << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
-            } 
-            //else {cout << "EMPTY";}
+                cout << "C" << (i - MAX_INVENTORY) << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
+            }
+            // else {cout << "EMPTY";}
         }
-        cout << endl << "Inventory Slot" << endl;
-        for (int i = 0; i < MAX_INVENTORY; i++){
+        cout << endl
+             << "Inventory Slot" << endl;
+        for (int i = 0; i < MAX_INVENTORY; i++) {
             if (items[i]->get_quantity() > 0) {
                 cout << "I" << i << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
-            } 
+            }
         }
     }
 };
