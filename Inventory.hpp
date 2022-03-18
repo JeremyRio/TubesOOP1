@@ -45,6 +45,18 @@ class Inventory {
         }
     }
 
+    void Discard(int idx, int item_qty) {
+        if (IsEmpty(idx)) {
+            // throw Exception;
+            // Tidak ada item dalam slot tersebut
+        } else if (item_qty > items[idx]->get_quantity()) {
+            // throw Exception;
+            // Jumlah item yang akan dibuang melebihi jumlah item yang ada
+        } else {
+            items[idx]->remove_quantity(item_qty);
+        }
+    }
+
     // Swap isi dari 2 tempat di inventory/crafting table
     void Swap(int idxSource, int idxDest) {
         Item* temp = items[idxDest];
@@ -104,14 +116,21 @@ class Inventory {
         }
     }
 
+    int GetIdx(string id) {
+        string temp;
+        for (int i = 1; i < id.length(); i++) {
+            temp += id[i];
+        }
+        return stoi(temp);
+    }
+    
     Item& operator[](string id) {
+        int idx_id = GetIdx(id);
         if (id[0] == 'I') {
-            string temp;
-            for (int i = 1; i < id.length(); i++) {
-                temp += id[i];
-            }
-            int idx = stoi(temp);
-            return *items[idx];
+            return *items[idx_id];
+        } else  // id[0] == 'C'
+        {
+            return *items[idx_id + MAX_INVENTORY];
         }
     }
 
@@ -143,7 +162,7 @@ class Inventory {
 
     int FindItemNotFull(string item_name) {
         for (int i = 0; i < MAX_INVENTORY; i++) {
-            if (items[i]->get_name() == item_name && items[i]->get_quantity() < MAX_QTY) {
+            if (items[i]->get_name() == item_name && items[i]->get_quantity() < MAX_QTY && !IsEmpty(i)) {
                 return i;
             }
         }

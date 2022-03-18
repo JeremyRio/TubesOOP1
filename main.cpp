@@ -1,4 +1,5 @@
 // sample main file, replace this with your own code
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -113,6 +114,12 @@ int main() {
             cout << "Exported" << endl;
         } else if (command == "CRAFT") {
             cout << "TODO" << endl;
+        } else if (command == "DISCARD") {
+            string item_id;
+            int item_qty;
+            cin >> item_id >> item_qty;
+            int idx = inventory.GetIdx(item_id);
+            inventory.Discard(idx, item_qty);
         } else if (command == "GIVE") {
             string item_name;
             int item_qty;
