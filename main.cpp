@@ -6,7 +6,6 @@
 #include <map>
 #include <string>
 
-#include "Inventory.hpp"
 #include "Item.hpp"
 #include "Recipes.hpp"
 
