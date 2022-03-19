@@ -32,6 +32,8 @@ class Item {
     void add_quantity(int quantity);
     void remove_quantity(int quantity);
     virtual void display_info();  // check info item aja (dihapusin aja)
+    virtual void Use();
+    virtual void DisplayItem();
 };
 
 class NonTool : public Item {
@@ -42,7 +44,9 @@ class NonTool : public Item {
     NonTool(const Item &item);
     NonTool &operator=(const NonTool &t);
     void Stack(Item item_source, int quantity, Item item_destination);
+    void Use();
     void display_info();  // check info item aja (dihapusin aja)
+    void DisplayItem();
 };
 
 class Tool : public Item {
@@ -55,10 +59,12 @@ class Tool : public Item {
     Tool(const Tool &t);
     Tool &operator=(const Tool &t);
     int get_durability() const;
+    void Use();
     void set_durability(int durability);
     void add_durability(int durability);
     void remove_durability(int durability);
     void display_info();  // check info item aja (dihapusin aja)
+    void DisplayItem();
 };
 
 #endif

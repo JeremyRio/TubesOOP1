@@ -109,7 +109,6 @@ int main() {
             for (int i = 2; i < 27; i++) {
                 output_file << "0:0" << endl;
             }
-
             cout << "Exported" << endl;
         } else if (command == "CRAFT") {
             cout << "TODO" << endl;
@@ -123,44 +122,7 @@ int main() {
             string item_name;
             int item_qty;
             cin >> item_name >> item_qty;
-
-            if (item_map.find(item_name) != item_map.end()) {
-                bool stop = false;
-                int idx_item;
-                while (item_qty > 0 && !stop) {
-                    if (inventory.isFull()) {
-                        // throw Exception:
-                        // inventory sudah full, item terbuang: {item_qty}
-                        stop = true;
-                    } else {
-                        if (Inventory::IsTool(item_map[item_name])) {
-                            idx_item = inventory.GetEmptySlot();
-                            if (idx_item != -1) {
-                                // item not found, add empty slot
-                                inventory.Add(idx_item, item_map[item_name]);
-                                item_qty--;
-                            }
-                        } else {
-                            idx_item = inventory.FindItemNotFull(item_name);
-                            if (idx_item == -1) {
-                                idx_item = inventory.GetEmptySlot();
-                                if (idx_item != -1) {
-                                    // item not found, add empty slot
-                                    inventory.Add(idx_item, item_map[item_name]);
-                                    inventory.AddQuantity(idx_item, item_qty);
-                                }
-                            } else {
-                                // item found
-                                inventory.AddQuantity(idx_item, item_qty);
-                            }
-                        }
-                    }
-                }
-            } else {
-                // throw Exception:
-                // Tidak ada nama Item {item_name}
-            }
-
+            inventory.Give(item_name, item_qty, item_map);
         } else if (command == "MOVE") {
             string slot_src;
             int slot_qty;
@@ -168,6 +130,10 @@ int main() {
             // need to handle multiple destinations
             cin >> slot_src >> slot_qty >> slot_dest;
 
+        } else if (command == "USE") {
+            string inventory_id;
+            cin >> inventory_id;
+            inventory.Use(inventory_id);
         } else {
             // todo
             cout << "Invalid command" << endl;

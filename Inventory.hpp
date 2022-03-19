@@ -1,9 +1,11 @@
 #include <iostream>
+#include <map>
 
 #include "Item.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
 #define MAX_CRAFT 9
+
 class Inventory {
     private:
     Item** items;
@@ -40,7 +42,7 @@ class Inventory {
             ReplaceSlot(idx, item);
             this->size++;
         } else {
-            if (IsTool(items[idx]) || items[idx]->get_id() != item->get_id()){
+            if (IsTool(items[idx]) || items[idx]->get_id() != item->get_id()) {
                 // throw Exception:
                 // Tidak dapat menambahkan item pada ID berbeda atau pada item Tool
             }
@@ -59,7 +61,7 @@ class Inventory {
             // Jumlah item yang akan dibuang melebihi jumlah item yang ada
         } else {
             items[idx]->remove_quantity(item_qty);
-            if (items[idx]->get_quantity() == 0){
+            if (items[idx]->get_quantity() == 0) {
                 this->size--;
             }
         }
@@ -93,7 +95,7 @@ class Inventory {
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             items[idxSource]->remove_quantity(quantity);
-            if (items[idxSource]->get_quantity() == 0){
+            if (items[idxSource]->get_quantity() == 0) {
                 this->size--;
             }
             ReplaceSlot(idxDest, items[idxSource]);
@@ -130,7 +132,7 @@ class Inventory {
             items[idxDest]->add_quantity(maxAmountToMove);
         } else {
             items[idxSource]->remove_quantity(quantity);
-            if (items[idxSource]->get_quantity() == 0){
+            if (items[idxSource]->get_quantity() == 0) {
                 this->size--;
             }
             items[idxDest]->add_quantity(quantity);
@@ -144,19 +146,19 @@ class Inventory {
         }
         return stoi(temp);
     }
-    
-    Item& operator[](string id) {
+
+    Item* operator[](string id) {
         int idx_id = GetIdx(id);
         if (id[0] == 'I') {
-            return *items[idx_id];
+            return items[idx_id];
         } else  // id[0] == 'C'
         {
-            return *items[idx_id + MAX_INVENTORY];
+            return items[idx_id + MAX_INVENTORY];
         }
     }
 
-    Item& operator[](int idx) {
-        return *items[idx];
+    Item* operator[](int idx) {
+        return items[idx];
     }
 
     void AddQuantity(int idx, int& remainder_qty) {
@@ -224,7 +226,8 @@ class Inventory {
              << "\nCraft Slot" << endl;
         for (int i = MAX_INVENTORY; i < 36; i++) {
             if (items[i]->get_quantity() > 0) {
-                cout << "C" << (i - MAX_INVENTORY) << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
+                cout << "C" << (i - MAX_INVENTORY) << " - ";
+                items[i]->DisplayItem();
             }
             // else {cout << "EMPTY";}
         }
@@ -232,8 +235,60 @@ class Inventory {
              << "Inventory Slot" << endl;
         for (int i = 0; i < MAX_INVENTORY; i++) {
             if (items[i]->get_quantity() > 0) {
-                cout << "I" << i << " - " << items[i]->get_name() << " - " << items[i]->get_quantity() << endl;
+                cout << "I" << i << " - ";
+                items[i]->DisplayItem();
             }
+        }
+    }
+
+    void Give(string& item_name, int& item_qty, map<string, Item*>& item_map) {
+        if (item_map.find(item_name) != item_map.end()) {
+            bool stop = false;
+            int idx_item;
+            while (item_qty > 0 && !stop) {
+                if (isFull()) {
+                    // throw Exception:
+                    // inventory sudah full, item terbuang: {item_qty}
+                    stop = true;
+                } else {
+                    if (Inventory::IsTool(item_map[item_name])) {
+                        idx_item = GetEmptySlot();
+                        if (idx_item != -1) {
+                            // item not found, add empty slot
+                            Add(idx_item, item_map[item_name]);
+                            item_qty--;
+                        }
+                    } else {
+                        idx_item = FindItemNotFull(item_name);
+                        if (idx_item == -1) {
+                            idx_item = GetEmptySlot();
+                            if (idx_item != -1) {
+                                // item not found, add empty slot
+                                Add(idx_item, item_map[item_name]);
+                                AddQuantity(idx_item, item_qty);
+                            }
+                        } else {
+                            // item found
+                            AddQuantity(idx_item, item_qty);
+                        }
+                    }
+                }
+            }
+        } else {
+            // throw Exception:
+            // Tidak ada nama Item {item_name}
+        }
+    }
+
+    void Use(string inventory_id) {
+        int idx = GetIdx(inventory_id);
+        if (inventory_id[0] == 'I' && idx >= 0 && idx <= 27) {
+            if (Inventory::IsTool(items[idx]) && items[idx]->get_quantity() > 0) {
+                items[idx]->Use();
+            }
+        } else {
+            // throw Exception:
+            // tidak ada ID inventory {inventory_id}
         }
     }
 };

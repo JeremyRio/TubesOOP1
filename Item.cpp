@@ -85,6 +85,18 @@ void Item::display_info() {
     cout << "Quantity: " << get_quantity() << "\n";
 }
 
+void Item::Use() {
+    // do nothing
+}
+
+void Item::DisplayItem() {
+    // do nothing
+}
+
+////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+
 NonTool::NonTool()
     : Item() {
 }
@@ -132,6 +144,19 @@ void NonTool::display_info() {
     Item::display_info();
 }
 
+void NonTool::Use() {
+    // throw Exception:
+    // Item bukan merupakan tool
+}
+
+void NonTool::DisplayItem() {
+    cout << this->name << " "
+         << " Quantity: " << this->quantity << endl;
+}
+////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+
 Tool::Tool()
     : Item() {
 }
@@ -175,4 +200,16 @@ void Tool::display_info() {
     cout << "Item: Tool" << endl;
     Item::display_info();
     cout << "Durability: " << get_durability() << endl;
+}
+
+void Tool::Use() {
+    durability--;
+    if (durability == 0) {
+        quantity = 0;
+    }
+}
+
+void Tool::DisplayItem() {
+    cout << this->name << " "
+         << " Durability: " << this->durability << endl;
 }
