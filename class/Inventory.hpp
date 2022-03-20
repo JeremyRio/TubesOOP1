@@ -90,10 +90,12 @@ class Inventory {
         if (quantity < 0) {
             // throw Exception:
             // jumlah yang dipindahkan tidak boleh negatif
+            return;
         }
         if (quantity > items[idxSource]->get_quantity()) {
             // throw Exception:
             // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
+            return;
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             items[idxSource]->remove_quantity(quantity);
@@ -107,12 +109,14 @@ class Inventory {
             if (quantity != items[idxSource]->get_quantity() && !IsTool(items[idxSource])) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
+                return;
             }
             Swap(idxSource, idxDest);
         } else if (items[idxSource]->get_id() != items[idxDest]->get_id()) {  // Keduanya NonTool, ID beda
             if (quantity != items[idxSource]->get_quantity()) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
+                return;
             }
             Swap(idxSource, idxDest);
         } else {  // NonTool dengan ID sama

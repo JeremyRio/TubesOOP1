@@ -99,9 +99,21 @@ int main() {
             string slot_src;
             int slot_qty;
             string slot_dest;
-            // need to handle multiple destinations
+            // still need to handle multiple destinations
             cin >> slot_src >> slot_qty >> slot_dest;
-
+            int idxSrc = (int)slot_src[1]-48;
+            int idxDest = (int)slot_dest[1]-48;
+            if (slot_src[0] == 'C'){
+                idxSrc += 27;
+            } else if (slot_src[0] == 'I' && slot_src.length() > 2){
+                idxSrc = idxSrc * 10 + (int)slot_src[2]-48;
+            }
+            if (slot_dest[0] == 'C'){
+                idxDest += 27;
+            } else if (slot_dest[0] == 'I' && slot_dest.length() > 2){
+                idxDest = idxDest * 10 + (int)slot_dest[2]-48;
+            }
+            inventory.Move(idxSrc, slot_qty, idxDest);
         } else if (command == "USE") {
             string inventory_id;
             cin >> inventory_id;
