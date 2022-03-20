@@ -6,12 +6,15 @@
 #include <map>
 #include <string>
 
-#include "Item.hpp"
-#include "Recipes.hpp"
+#include "class/Item.hpp"
+#include "class/NonTool.hpp"
+#include "class/Recipes.hpp"
+#include "class/Tool.hpp"
 
 using namespace std;
 
 int main() {
+    // read configuration file
     map<string, Item*> item_map;
     string config_path = "./config";
     string item_config_path = config_path + "/item.txt";
@@ -37,21 +40,6 @@ int main() {
             item_map[line[1]] = new NonTool(stoi(line[0]), line[1], line[2], 0);
         }
     }
-
-    // check inventory
-    // Inventory inventory;
-    // inventory.Add(3, item_map["OAK_LOG"]);
-    // inventory.Add(4, item_map["IRON_AXE"]);
-    // inventory[3].set_quantity(5);
-    // inventory[3].display_info();
-    // inventory.Display();
-
-    // checking if it works
-    // for (auto it1 = item_map.begin(); it1 != item_map.end(); ++it1) {
-    //     it1->second->display_info();
-    //     cout << it1->first << endl
-    //          << endl;
-    // }
 
     // read recipes
     map<string, Recipes*> recipe_map;
@@ -102,22 +90,6 @@ int main() {
             string output_path;
             cin >> output_path;
             ofstream output_file(output_path);
-
-            // hardcode for first test case
-            output_file << "21:10" << endl;
-            output_file << "6:1" << endl;
-            for (int i = 2; i < 27; i++) {
-                output_file << "0:0" << endl;
-            }
-            cout << "Exported" << endl;
-        } else if (command == "CRAFT") {
-            cout << "TODO" << endl;
-        } else if (command == "DISCARD") {
-            string item_id;
-            int item_qty;
-            cin >> item_id >> item_qty;
-            int idx = inventory.GetIdx(item_id);
-            inventory.Discard(idx, item_qty);
         } else if (command == "GIVE") {
             string item_name;
             int item_qty;

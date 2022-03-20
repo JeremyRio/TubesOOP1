@@ -3,14 +3,14 @@ EXT_IN = in
 EXT_OUT = out
 EXT_ANS = ans
 EXECUTABLE_FILENAME = main
-ALL_SRCS := $(wildcard *.cpp)
+ALL_SRCS := $(wildcard class/*.cpp)
 SRCS     := $(filter-out check.cpp, $(ALL_SRCS))
 
 all: compile test check
 
 # Compile all cpp files except check.cpp
 compile:
-	g++ -std=c++17 -o $(EXECUTABLE_FILENAME) $(SRCS)
+	g++ -std=c++17 -o $(EXECUTABLE_FILENAME) main.cpp $(ALL_SRCS)
 
 # Test
 test: $(TC_FOLDER)/*.$(EXT_IN) $(EXECUTABLE_FILENAME)

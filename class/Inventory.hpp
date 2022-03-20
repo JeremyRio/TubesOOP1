@@ -2,6 +2,8 @@
 #include <map>
 
 #include "Item.hpp"
+#include "Tool.hpp"
+#include "NonTool.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
 #define MAX_CRAFT 9
