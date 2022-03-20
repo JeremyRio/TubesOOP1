@@ -8,7 +8,7 @@
 
 #include "class/Item.hpp"
 #include "class/NonTool.hpp"
-#include "class/Recipes.hpp"
+#include "class/Inventory.hpp"
 #include "class/Tool.hpp"
 
 using namespace std;
@@ -80,6 +80,14 @@ int main() {
     // sample interaction
     string command;
     Inventory inventory;
+           // angel->ReplaceSlot(12,new Tool(16,"DIOMAND", "-", 10));
+    inventory.ReplaceSlot(28, new NonTool(12,"DIAMOND","-",1));
+    inventory.ReplaceSlot(29, new NonTool(12,"DIAMOND","-",1));
+    inventory.ReplaceSlot(32, new NonTool(12,"DIAMOND","-",1));
+    inventory.ReplaceSlot(31, new NonTool(12,"STICK","-",1))  ;
+    inventory.ReplaceSlot(34, new NonTool(12,"STICK","-",1))  ;
+    // inventory.ReplaceSlot(31, new NonTool(3,"PLANK","-",1));
+    // inventory.ReplaceSlot(34, new NonTool(3,"PLANK","-",1));
     while (true) {
         cout << "\nInventory:\n";
         inventory.Show();
@@ -90,6 +98,8 @@ int main() {
             string output_path;
             cin >> output_path;
             ofstream output_file(output_path);
+        } else if (command == "CRAFT") {
+            inventory.Crafting(recipe_map,item_map);
         } else if (command == "GIVE") {
             string item_name;
             int item_qty;

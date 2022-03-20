@@ -31,7 +31,7 @@ Recipes::~Recipes() {
 Recipes& Recipes::operator=(const Recipes& other) {
     delete[] make;  // bebaskan memory yang digunakan sebelumnya
     this->row = other.row;
-    this->col = other.row;
+    this->col = other.col;
     this->name = other.name;
     this->craft_quantity = other.craft_quantity;
     this->neff = 0;
@@ -54,77 +54,123 @@ void Recipes::print_info() {
     cout << "]";
 }
 
+int Recipes::getrow(){
+    return this->row;
+}
+
+int Recipes::getcol(){
+    return this->col;
+}
+
+int Recipes::getCraftQuantity(){
+    return this->craft_quantity;
+}
+
+int Recipes::getneff(){
+    return this->neff;
+}
+
+string Recipes::GetRecipeIngredients(int idx) const{
+    return this->make[idx];
+}
+
 Recipes& Recipes::operator<<(string bahan) {
     this->make[this->neff] = bahan;
     this->neff += 1;
     return *this;
 }
 
-// bool Recipes::Matching(Inventory* item, Recipes* other) {
-//     // checking the normal position
-//     if (sameItem(item)) {
-//         return true;
-//     }
+Recipes& Recipes::NormalPosition(Recipes& r){
+    *this = Recipes(3, 3, r.name, r.craft_quantity);
+    if (r.col == 1){
+        this->FillEmpty();
+        int temp = 1;
+        for (int i = 1; i < 8; i+=3){
+            this->make[i] = r.make[i-temp];
+            temp+=2;
+        }
+        this->neff = 9;
+        return *this;
+    }
+    else{
+        *this = r;
+        return *this;
+    }
+}
+    
+Recipes& Recipes::GeserKiri(Recipes& r){
+    // cout << r.getcol() << "berapa rownya" << endl << endl;
+    int temp = 0;
+    //Recipes *rnew = new Recipes(3, 3, r.name, r.craft_quantity);
+    *this =  Recipes(3, 3, r.name, r.craft_quantity);
+    this->FillEmpty();
+    if (r.col == 2){
+        for (int i = 0; i < 9; i++){
+        if ((i+1)%(r.row) == 0){temp++;}
+        else this->make[i] = r.make[i-temp];
+        }
+        this->neff = 9;
+        return *this;
+    }
+    else if (r.col == 1){
+        for (int i = 0; i < 9; i+= 3){
+            this->make[i] = r.make[i-temp];
+            temp+=2;
+        }
+        this->neff = 9;
+        return *this;
+    }
+    else {
+        *this = r;
+        return *this;
+    }
+}
 
-//     // checking in different positions
-//     Recipes* temp_recipe = new Recipes(*other);
-//     for (int i = 0; i < 2; i++) {
-//         *temp_recipe = *other;
+Recipes& Recipes::GeserKanan(Recipes& r){
+    int temp = 0;
+    //Recipes *rnew = new Recipes(3, 3, r.name, r.craft_quantity);
+    *this =  Recipes(3, 3, r.name, r.craft_quantity);
+    this->FillEmpty();
+    if (r.col == 2){
+        for (int i = 0; i < 9; i++){
+            if ((i)%(r.row) == 0){temp++;}
+            else this->make[i] = r.make[i-temp];
+        }
+        this->neff = 9;
+        return *this;
+    }
+    else if (r.col == 1){
+        temp = 2;
+        for (int i = 2; i < 9; i+= 3){
+            this->make[i] = r.make[i-temp];
+            temp+=2;
+        }
+        this->neff = 9;
+        return *this;
+    }
+    else {
+        *this = r;
+        return *this;
+    }
+}
 
-//         // check mirrored position
-//         if (i == 1) {
-//             (*temp_recipe).Mirrored_Y_Recipe();
-//             if (temp_recipe->sameItem(item)) {
-//                 return true;
-//             }
-//         }
-
-//         // check right position
-//         (*temp_recipe).GeserKanan();
-//         if (temp_recipe->sameItem(item)) {
-//             return true;
-//         }
-
-//         // check left position
-//         (*temp_recipe).GeserKiri().GeserKiri();
-//         if (temp_recipe->sameItem(item)) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
-Recipes& Recipes::GeserKiri() {
+Recipes& Recipes::Mirrored_Y_Recipe(){
     string temp;
-    for (int i = 8; i > 0; i -= 3) {
-        string temp = this->make[i];
-        string temp1 = this->make[i - 1];
-        this->make[i - 1] = temp;
-        this->make[i - 2] = temp1;
-        this->make[i] = "-";
+    if (this->col == 2){
+        for (int i = 0; i < 6; i+= 2){
+        //swapping elements
+            temp = this->make[i];
+            this->make[i] = this->make[i+1];
+            this->make[i+1] = temp;
+        }
     }
     return *this;
 }
 
-Recipes& Recipes::GeserKanan() {
+Recipes& Recipes::FillEmpty(){
     string temp;
-    for (int i = 0; i < 9; i += 3) {
-        string temp = this->make[i];
-        string temp1 = this->make[i + 1];
-        this->make[i + 1] = temp;
-        this->make[i + 2] = temp1;
+    for (int i = 0; i < 9; i++){
         this->make[i] = "-";
-    }
-    return *this;
-}
-
-Recipes& Recipes::Mirrored_Y_Recipe() {
-    string temp;
-    for (int i = 0; i < 9; i += 3) {
-        // swapping elements
-        temp = this->make[i];
-        this->make[i] = this->make[i + 2];
-        this->make[i + 2] = temp;
     }
     return *this;
 }

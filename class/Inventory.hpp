@@ -2,6 +2,7 @@
 #include <map>
 
 #include "Item.hpp"
+#include "Recipes.hpp"
 #include "Tool.hpp"
 #include "NonTool.hpp"
 #define MAX_QTY 64
@@ -202,6 +203,20 @@ class Inventory {
         return this->size == MAX_INVENTORY;
     }
 
+    int getSizeCraft(){
+        int cnt_tool = 10;
+        int cnt_non_tool = 20;
+        for (int i = MAX_INVENTORY; i < 36; i++){
+            if (items[i]->get_quantity()>0)
+                if (IsTool(items[i])) {cnt_tool++;}
+                else {cnt_non_tool++;}
+        }
+        if (cnt_tool != 10 && cnt_non_tool != 20) {return -1;}
+        else if (cnt_non_tool == 20) {return cnt_tool;}
+        else if (cnt_tool == 10) {return cnt_non_tool;}
+        else {return 0;}
+    }
+
     void Display() {
         // Displaying Craft Table
         for (int i = MAX_INVENTORY; i < 36; i++) {
@@ -296,5 +311,121 @@ class Inventory {
             // throw Exception:
             // tidak ada ID inventory {inventory_id}
         }
+    }
+    bool sameItem(Recipes& r){
+        if (r.getneff() == 9){
+            for (int i = 27; i < 36; i++){
+                // ini untuk yang berukuran 3x3
+                if (items[i]->get_name() != r.GetRecipeIngredients(i-27)) {return false;}
+                }
+            return true;
+        }
+        return false;
+    }
+
+
+    bool Matching(Recipes* other){
+
+        Recipes *temp_recipe = new Recipes(*other);
+        Recipes *temp_recipe2 = new Recipes(*other);
+        (*temp_recipe).NormalPosition(*other);
+        // checking the normal position
+        if (sameItem(*temp_recipe)) {return true;}
+        // checking in different positions
+       
+        for (int i = 0; i < 2; i++){
+            *temp_recipe = *other;
+            // check mirrored position
+            if (i == 1) { 
+                (*temp_recipe2).Mirrored_Y_Recipe();
+                
+                // check right position
+                temp_recipe->GeserKanan(*temp_recipe2);
+                if (sameItem(*temp_recipe)) {return true;}
+                
+                //check left position 
+                *temp_recipe = *temp_recipe2;
+                temp_recipe->GeserKiri(*temp_recipe2);
+                if (sameItem(*temp_recipe)) {return true;}
+                
+            }
+            else{  
+                // check right position
+                temp_recipe->GeserKanan(*other);
+                if (sameItem(*temp_recipe)) {return true;}
+                
+                //check left position 
+                *temp_recipe = *other;
+                temp_recipe->GeserKiri(*other);
+                if (sameItem(*temp_recipe)) {return true;}
+                
+            }
+
+            
+
+        }
+        return false;
+    }
+
+
+    void Crafting(map<string, Recipes*>& recipe_map, map<string, Item*>& item_map){
+        // mengambil jumlah elemen dalam slot crafting
+        int effective_elements = getSizeCraft();
+        string result;
+        bool found = false;
+
+        // jika slot valid dimana tidak ada campuran antara tool dan non tool di slot crafting
+        if (effective_elements != -1 || effective_elements != 0){
+            // memeriksa yang non tool
+            if (effective_elements > 20){
+                effective_elements -=20;
+                cout << effective_elements << endl;
+                for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
+                    // Pemeriksaan yang elemen membuat tool
+                    if (effective_elements >= 3 && it1->second->getneff() >= 3){
+                        found = Matching(it1->second);
+                        result = it1->first;
+                        cout << result << endl;
+                        if (found){break;}
+                    }
+                    else{
+                        // Pemeriksaan yang elemen membuat non tool
+                        if (it1->second->getneff() < 3 && effective_elements < 3){
+                            found = MatchSmallItem(it1->second, effective_elements);
+                            result = it1->first;
+                            if (found){;break;}
+                        }
+                    }
+                }
+            }
+            else{
+                // untuk periksa tool
+                cout << "NOTHING YET";
+            }
+            // Pengurangan barang slot (masih 1 kuantitas)
+            if (found){
+                for (int i = 27 ; i < 36; i++){
+                    if (items[i]->get_name() != "-"){
+                        Discard(i,1);
+                    }
+                }
+                int itm_quantity = recipe_map.find(result)->second->getCraftQuantity();
+                Give(result, itm_quantity ,item_map);    
+            }
+            else{
+                cout << "Can't make anything!! " << endl;
+            }
+        }
+    }
+
+    bool MatchSmallItem(Recipes* r, int amount_elements){
+        for (int i = 27; i < 36; i++){
+            string temp = items[i]->get_name();
+            if ( temp == r->GetRecipeIngredients(0) && amount_elements == 2) {
+                return (items[i+3]->get_name() == r->GetRecipeIngredients(1));
+            }
+            else if (amount_elements == 1 && temp == r->GetRecipeIngredients(0)) {return true;}
+        }
+        return false;
     }
 };
