@@ -80,14 +80,7 @@ int main() {
     // sample interaction
     string command;
     Inventory inventory;
-           // angel->ReplaceSlot(12,new Tool(16,"DIOMAND", "-", 10));
-    inventory.ReplaceSlot(28, new NonTool(12,"DIAMOND","-",1));
-    inventory.ReplaceSlot(29, new NonTool(12,"DIAMOND","-",1));
-    inventory.ReplaceSlot(32, new NonTool(12,"DIAMOND","-",1));
-    inventory.ReplaceSlot(31, new NonTool(12,"STICK","-",1))  ;
-    inventory.ReplaceSlot(34, new NonTool(12,"STICK","-",1))  ;
-    // inventory.ReplaceSlot(31, new NonTool(3,"PLANK","-",1));
-    // inventory.ReplaceSlot(34, new NonTool(3,"PLANK","-",1));
+    
     while (true) {
         cout << "\nInventory:\n";
         inventory.Show();

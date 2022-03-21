@@ -400,7 +400,9 @@ class Inventory {
             }
             else{
                 // untuk periksa tool
-                cout << "NOTHING YET";
+                effective_elements-=10;
+                MatchingTools(effective_elements);
+                return;
             }
             // Pengurangan barang slot (masih 1 kuantitas)
             if (found){
@@ -427,5 +429,44 @@ class Inventory {
             else if (amount_elements == 1 && temp == r->GetRecipeIngredients(0)) {return true;}
         }
         return false;
+    }
+    void MatchingTools(int effective_elements){
+        int cnt = 1;
+        string temp1;
+        int first_index, second_index;
+        bool first = false;
+        bool found = false;
+        if (effective_elements == 2){
+            for (int i = 27 ; i < 36; i++){
+                if (items[i]->get_name() != "-" && !first){
+                    temp1 = items[i]->get_name();
+                    first_index = i;
+                    first = true;
+                }
+                else if (first && items[i]->get_name()== temp1){
+                    second_index = i;
+                    found = true;
+                }
+            }
+        } else {
+            // throw exception tidak bisa buat item
+            return;
+        }
+        if (found){
+            int durability = ((Tool*)items[second_index])->get_durability();
+            ((Tool*)items[first_index])->add_durability(durability);
+            for (int i=0; i < MAX_INVENTORY; i++){
+                if (IsEmpty(i)){
+                    Move(first_index, 1,i);
+                    Discard(first_index,1);
+                    Discard(second_index,1);
+                    return;
+                }
+            }
+            // handle exception inventory sudah full, item terbuang: 2 quantity
+        }
+        else {
+            // handle exception bukan nama tool yang sama
+        }
     }
 };
