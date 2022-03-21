@@ -315,8 +315,8 @@ class Inventory {
     bool sameItem(Recipes& r){
         if (r.getneff() == 9){
             for (int i = 27; i < 36; i++){
-                // ini untuk yang berukuran 3x3
-                if (items[i]->get_name() != r.GetRecipeIngredients(i-27)) {return false;}
+                // ini untuk yang berukuran 3x3, menghandle nama dan tipe yang tepat dengan recipe
+                if (items[i]->get_name() != r.GetRecipeIngredients(i-27) && items[i]->get_type() != r.GetRecipeIngredients(i-27)) {return false;}
                 }
             return true;
         }
@@ -338,31 +338,28 @@ class Inventory {
             // check mirrored position
             if (i == 1) { 
                 (*temp_recipe2).Mirrored_Y_Recipe();
-                
+
                 // check right position
                 temp_recipe->GeserKanan(*temp_recipe2);
                 if (sameItem(*temp_recipe)) {return true;}
-                
+
                 //check left position 
                 *temp_recipe = *temp_recipe2;
                 temp_recipe->GeserKiri(*temp_recipe2);
                 if (sameItem(*temp_recipe)) {return true;}
-                
+
             }
             else{  
                 // check right position
                 temp_recipe->GeserKanan(*other);
                 if (sameItem(*temp_recipe)) {return true;}
-                
+
                 //check left position 
                 *temp_recipe = *other;
                 temp_recipe->GeserKiri(*other);
                 if (sameItem(*temp_recipe)) {return true;}
-                
+
             }
-
-            
-
         }
         return false;
     }
@@ -379,13 +376,12 @@ class Inventory {
             // memeriksa yang non tool
             if (effective_elements > 20){
                 effective_elements -=20;
-                cout << effective_elements << endl;
+
                 for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
                     // Pemeriksaan yang elemen membuat tool
                     if (effective_elements >= 3 && it1->second->getneff() >= 3){
                         found = Matching(it1->second);
                         result = it1->first;
-                        cout << result << endl;
                         if (found){break;}
                     }
                     else{
@@ -412,10 +408,11 @@ class Inventory {
                     }
                 }
                 int itm_quantity = recipe_map.find(result)->second->getCraftQuantity();
+                cout << "\nYou succeded in making " << itm_quantity << " " << result << endl;
                 Give(result, itm_quantity ,item_map);    
             }
             else{
-                cout << "Can't make anything!! " << endl;
+                cout << "\n You Couldm't make anything!! " << endl;
             }
         }
     }
