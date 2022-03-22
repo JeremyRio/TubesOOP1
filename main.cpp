@@ -103,20 +103,38 @@ int main() {
             int slot_qty;
             string slot_dest;
             // still need to handle multiple destinations
-            cin >> slot_src >> slot_qty >> slot_dest;
+            cin >> slot_src >> slot_qty;
+            getline(cin, slot_dest);
             int idxSrc = (int)slot_src[1]-48;
-            int idxDest = (int)slot_dest[1]-48;
-            if (slot_src[0] == 'C'){
-                idxSrc += 27;
-            } else if (slot_src[0] == 'I' && slot_src.length() > 2){
-                idxSrc = idxSrc * 10 + (int)slot_src[2]-48;
+            if (slot_src[0] == 'C') idxSrc+=27;
+            if (slot_src.length() > 2) idxSrc = idxSrc*10+(int)slot_src[2]-48;
+            int idxDest;
+            string tempDest = "";
+            int count = 1;
+            // Menghitung jumlah slot yang dituju
+            for (int i = 1; i < slot_dest.length(); i++){
+                if (slot_dest[i] == ' ') count++;
             }
-            if (slot_dest[0] == 'C'){
-                idxDest += 27;
-            } else if (slot_dest[0] == 'I' && slot_dest.length() > 2){
-                idxDest = idxDest * 10 + (int)slot_dest[2]-48;
+            int amountPerStack = slot_qty / count;
+            int remainder = slot_qty % count;
+            // Membagi berdasarkan jumlah slot
+            for (int i = 1; i < slot_dest.length(); i++){
+                if (slot_dest[i] == ' ' || i == slot_dest.length()-1){
+                    if (i == slot_dest.length()-1) tempDest += slot_dest[i];
+                    idxDest = (int)tempDest[1]-48;
+                    if (tempDest[0] == 'C') idxDest+=27;
+                    if (tempDest.length() > 2) idxDest = idxDest*10+(int)tempDest[2]-48;
+                    if (remainder > 0){
+                        inventory.Move(idxSrc, amountPerStack+1, idxDest);
+                        remainder--;
+                    } else {
+                        inventory.Move(idxSrc, amountPerStack, idxDest);
+                    }
+                    tempDest = "";;
+                } else {
+                    tempDest += slot_dest[i];
+                }
             }
-            inventory.Move(idxSrc, slot_qty, idxDest);
         } else if (command == "USE") {
             string inventory_id;
             cin >> inventory_id;

@@ -75,6 +75,12 @@ void Item::remove_quantity(int quantity) {
         // throw Exception: item kekurangan
     }
     this->set_quantity(this->get_quantity() - quantity);
+
+    if (this->get_quantity() == 0){
+        this->set_id(0);
+        this->set_name("-");
+        this->set_type("-");
+    }
 }
 
 void Item::display_info() {

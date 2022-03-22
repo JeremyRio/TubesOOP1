@@ -100,11 +100,11 @@ class Inventory {
             return;
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
+            ReplaceSlot(idxDest, items[idxSource]);
             items[idxSource]->remove_quantity(quantity);
             if (items[idxSource]->get_quantity() == 0) {
                 this->size--;
             }
-            ReplaceSlot(idxDest, items[idxSource]);
             items[idxDest]->set_quantity(quantity);
             this->size++;
         } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])) {
