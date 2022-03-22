@@ -66,6 +66,7 @@ class Inventory {
             items[idx]->remove_quantity(item_qty);
             if (items[idx]->get_quantity() == 0) {
                 this->size--;
+                this->Add(idx, new Item());
             }
         }
     }
@@ -212,7 +213,7 @@ class Inventory {
                 else {cnt_non_tool++;}
         }
         if (cnt_tool != 10 && cnt_non_tool != 20) {return -1;}
-        else if (cnt_non_tool == 20) {return cnt_tool;}
+        else if (cnt_non_tool == 20 && cnt_non_tool != 10) {return cnt_tool;}
         else if (cnt_tool == 10) {return cnt_non_tool;}
         else {return 0;}
     }
@@ -312,58 +313,6 @@ class Inventory {
             // tidak ada ID inventory {inventory_id}
         }
     }
-    bool sameItem(Recipes& r){
-        if (r.getneff() == 9){
-            for (int i = 27; i < 36; i++){
-                // ini untuk yang berukuran 3x3, menghandle nama dan tipe yang tepat dengan recipe
-                if (items[i]->get_name() != r.GetRecipeIngredients(i-27) && items[i]->get_type() != r.GetRecipeIngredients(i-27)) {return false;}
-                }
-            return true;
-        }
-        return false;
-    }
-
-
-    bool Matching(Recipes* other){
-
-        Recipes *temp_recipe = new Recipes(*other);
-        Recipes *temp_recipe2 = new Recipes(*other);
-        (*temp_recipe).NormalPosition(*other);
-        // checking the normal position
-        if (sameItem(*temp_recipe)) {return true;}
-        // checking in different positions
-       
-        for (int i = 0; i < 2; i++){
-            *temp_recipe = *other;
-            // check mirrored position
-            if (i == 1) { 
-                (*temp_recipe2).Mirrored_Y_Recipe();
-
-                // check right position
-                temp_recipe->GeserKanan(*temp_recipe2);
-                if (sameItem(*temp_recipe)) {return true;}
-
-                //check left position 
-                *temp_recipe = *temp_recipe2;
-                temp_recipe->GeserKiri(*temp_recipe2);
-                if (sameItem(*temp_recipe)) {return true;}
-
-            }
-            else{  
-                // check right position
-                temp_recipe->GeserKanan(*other);
-                if (sameItem(*temp_recipe)) {return true;}
-
-                //check left position 
-                *temp_recipe = *other;
-                temp_recipe->GeserKiri(*other);
-                if (sameItem(*temp_recipe)) {return true;}
-
-            }
-        }
-        return false;
-    }
-
 
     void Crafting(map<string, Recipes*>& recipe_map, map<string, Item*>& item_map){
         // mengambil jumlah elemen dalam slot crafting
@@ -379,19 +328,9 @@ class Inventory {
 
                 for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
                     // Pemeriksaan yang elemen membuat tool
-                    if (effective_elements >= 3 && it1->second->getneff() >= 3){
-                        found = Matching(it1->second);
-                        result = it1->first;
-                        if (found){break;}
-                    }
-                    else{
-                        // Pemeriksaan yang elemen membuat non tool
-                        if (it1->second->getneff() < 3 && effective_elements < 3){
-                            found = MatchSmallItem(it1->second, effective_elements);
-                            result = it1->first;
-                            if (found){;break;}
-                        }
-                    }
+                    found = LetThisMatch(it1->second);
+                    result = it1->first;
+                    if (found){break;} 
                 }
             }
             else{
@@ -417,16 +356,6 @@ class Inventory {
         }
     }
 
-    bool MatchSmallItem(Recipes* r, int amount_elements){
-        for (int i = 27; i < 36; i++){
-            string temp = items[i]->get_name();
-            if ( temp == r->GetRecipeIngredients(0) && amount_elements == 2) {
-                return (items[i+3]->get_name() == r->GetRecipeIngredients(1));
-            }
-            else if (amount_elements == 1 && temp == r->GetRecipeIngredients(0)) {return true;}
-        }
-        return false;
-    }
     void MatchingTools(int effective_elements){
         int cnt = 1;
         string temp1;
@@ -465,5 +394,87 @@ class Inventory {
         else {
             // handle exception bukan nama tool yang sama
         }
+    }
+
+    void getBoundary(int& brow1, int& brow2, int& bcol1, int& bcol2, int& nrow, int& ncol){
+        int row[3] = {};
+        int col[3] = {};
+        ncol = 0;
+        nrow = 0; 
+        int count = 0;
+        for (int i = 27; i < 36; i += 3) {
+            for (int j = 0; j < 3; j++) {
+                if (items[i+j]->get_name() == "-") {
+                    col[j]++;
+                    row[i-27-count]++;
+                }
+            }
+            count += 2;
+        }
+        for (int i =0; i < 3; i++) {
+            if (row[i] == 3){
+                nrow++;
+            }
+            if (col[i] == 3){
+                ncol++;
+            }
+        }
+        nrow = 3 - nrow;
+        ncol = 3 - ncol;
+        int lastr = 0;
+        int firstr = 0;
+        int lastc = 3;
+        int firstc = 0;
+        if (row[2] == 3) {
+            lastr = 1;
+            if (row[1] == 3) { lastr = 2;}
+            else if ( row[0] == 3) { firstr = 1; } 
+        }
+        else if (row[0] == 3) {
+            firstr = 1;
+            if (row[1] == 3) { firstr++; }
+
+        }
+        if (col[0] == 3) {
+            firstc++;
+            if (col[2] == 3) { lastc--;  }
+            else if ( col[1] == 3) { firstc++; }
+        }
+        else if (col[2] == 3) {
+            lastc = 2;
+            if (col[1] == 3) { lastc--;}
+        }
+
+        brow1 = firstr;
+        brow2 = lastr;
+        bcol1 = firstc;
+        bcol2 = lastc;
+    }
+
+    bool sameSubMatrix(Recipes& r) {
+        int brow1,brow2,bcol1,bcol2,nrow,ncol;
+        this->getBoundary(brow1,brow2,bcol1,bcol2,nrow,ncol);
+        int cnt = 0;
+        if (r.getrow() == nrow && r.getcol() == ncol){
+            for (int i = 27 + brow1*3 ; i < 27 + (9 - brow2*3) ; i+=3 ) {
+                for (int j = bcol1; j < bcol2 ; j++) {
+                    if ( items[i+j]->get_type() != r.GetRecipeIngredients(cnt) && items[i+j]->get_name() != r.GetRecipeIngredients(cnt) ) {return false;}
+                    cnt++;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    bool LetThisMatch(Recipes* r){
+        Recipes *temp = new Recipes(*r);
+        for (int i = 0; i < 2; i++) {
+            if (i == 1) {
+                temp->Mirrored_Y_Recipe();
+            }
+            if ( this->sameSubMatrix(*temp) ) {return true;}
+        }
+        return false;
     }
 };

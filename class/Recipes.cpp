@@ -80,97 +80,17 @@ Recipes& Recipes::operator<<(string bahan) {
     return *this;
 }
 
-Recipes& Recipes::NormalPosition(Recipes& r){
-    *this = Recipes(3, 3, r.name, r.craft_quantity);
-    if (r.col == 1){
-        this->FillEmpty();
-        int temp = 1;
-        for (int i = 1; i < 8; i+=3){
-            this->make[i] = r.make[i-temp];
-            temp+=2;
-        }
-        this->neff = 9;
-        return *this;
-    }
-    else{
-        *this = r;
-        return *this;
-    }
-}
-    
-Recipes& Recipes::GeserKiri(Recipes& r){
-    // cout << r.getcol() << "berapa rownya" << endl << endl;
-    int temp = 0;
-    //Recipes *rnew = new Recipes(3, 3, r.name, r.craft_quantity);
-    *this =  Recipes(3, 3, r.name, r.craft_quantity);
-    this->FillEmpty();
-    if (r.col == 2){
-        for (int i = 0; i < 9; i++){
-        if ((i+1)%(r.row) == 0){temp++;}
-        else this->make[i] = r.make[i-temp];
-        }
-        this->neff = 9;
-        return *this;
-    }
-    else if (r.col == 1){
-        for (int i = 0; i < 9; i+= 3){
-            this->make[i] = r.make[i-temp];
-            temp+=2;
-        }
-        this->neff = 9;
-        return *this;
-    }
-    else {
-        *this = r;
-        return *this;
-    }
-}
-
-Recipes& Recipes::GeserKanan(Recipes& r){
-    int temp = 0;
-    //Recipes *rnew = new Recipes(3, 3, r.name, r.craft_quantity);
-    *this =  Recipes(3, 3, r.name, r.craft_quantity);
-    this->FillEmpty();
-    if (r.col == 2){
-        for (int i = 0; i < 9; i++){
-            if ((i)%(r.row) == 0){temp++;}
-            else this->make[i] = r.make[i-temp];
-        }
-        this->neff = 9;
-        return *this;
-    }
-    else if (r.col == 1){
-        temp = 2;
-        for (int i = 2; i < 9; i+= 3){
-            this->make[i] = r.make[i-temp];
-            temp+=2;
-        }
-        this->neff = 9;
-        return *this;
-    }
-    else {
-        *this = r;
-        return *this;
-    }
-}
-
 Recipes& Recipes::Mirrored_Y_Recipe(){
     string temp;
-    if (this->col == 2){
-        for (int i = 0; i < 6; i+= 2){
-        //swapping elements
+    if (!getcol() == 1){
+        int switchidx = getcol()-1;
+        for (int i = 0; i < 3*getcol(); i++) {
+            // swapping elements
             temp = this->make[i];
-            this->make[i] = this->make[i+1];
-            this->make[i+1] = temp;
-        }
-    }
-    return *this;
-}
+            this->make[i] = this->make[i+switchidx];
+            this->make[i+switchidx] = temp;
 
-Recipes& Recipes::FillEmpty(){
-    string temp;
-    for (int i = 0; i < 9; i++){
-        this->make[i] = "-";
+        }
     }
     return *this;
 }

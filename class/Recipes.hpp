@@ -34,15 +34,9 @@ public:
     Recipes& operator<<(string bahan);
 
     //manipulasi recipes
-    Recipes& NormalPosition(Recipes& r);
-
-    Recipes& GeserKiri(Recipes& r);
-
-    Recipes& GeserKanan(Recipes& r);
-
+    
     Recipes& Mirrored_Y_Recipe();
 
-    Recipes& FillEmpty();
 };
 
 #endif
