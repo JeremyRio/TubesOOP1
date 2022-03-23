@@ -74,6 +74,7 @@ void Inventory::Swap(int idxSource, int idxDest) {
     }
     ReplaceSlot(idxDest, items[idxSource]);
     ReplaceSlot(idxSource, temp);
+    delete temp;
 }
 
 // Memindahkan suatu item dari suatu tempat ke tempat lain
