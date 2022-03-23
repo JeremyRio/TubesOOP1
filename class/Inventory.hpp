@@ -6,12 +6,25 @@
 #include "NonTool.hpp"
 #include "Recipes.hpp"
 #include "Tool.hpp"
+#include "BaseException.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
 #define MAX_CRAFT 9
 #define CRAFT_BOUNDARY 3
 #define CRAFTING_SLOT(i, j, k, l) (i * CRAFT_BOUNDARY + j + MAX_INVENTORY + k * CRAFT_BOUNDARY + l)
 #define CRAFTING_INDEX(i) (MAX_INVENTORY + i)
+
+class CustomException : public BaseException {
+private:
+    string message;
+public:
+    CustomException(string message) {
+        this->message = message;
+    }
+    void printMessage() {
+        cout << message << endl;
+    }
+};
 
 class Inventory {
     private:
@@ -67,9 +80,13 @@ class Inventory {
         if (IsEmpty(idx)) {
             // throw Exception;
             // Tidak ada item dalam slot tersebut
+            BaseException *e = new CustomException("The selected item is empty");
+            throw e;
         } else if (item_qty > items[idx]->GetQuantity()) {
             // throw Exception;
             // Jumlah item yang akan dibuang melebihi jumlah item yang ada
+            BaseException *e = new CustomException("The selected item is out of stock");
+            throw e;
         } else {
             items[idx]->RemoveQuantity(item_qty);
             if (items[idx]->GetQuantity() == 0) {
@@ -93,6 +110,7 @@ class Inventory {
 
     // Memindahkan suatu item dari suatu tempat ke tempat lain
     void Move(int idxSource, int quantity, int idxDest) {
+        CommandFailedException error;
         if (quantity == 0) {
             return;
         }
@@ -100,12 +118,14 @@ class Inventory {
         if (quantity < 0) {
             // throw Exception:
             // jumlah yang dipindahkan tidak boleh negatif
-            return;
+            BaseException *e = new InvalidNumberException(quantity);
+            throw e;
         }
         if (quantity > items[idxSource]->GetQuantity()) {
             // throw Exception:
             // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
-            return;
+            BaseException *e = new CustomException("The selected item is out of stock");
+            throw e;
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             ReplaceSlot(idxDest, items[idxSource]);
@@ -119,14 +139,16 @@ class Inventory {
             if (quantity != items[idxSource]->GetQuantity() && !IsTool(items[idxSource])) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
-                return;
+                BaseException *e = new CustomException("Item cannot be moved to different item");
+                throw e;
             }
             Swap(idxSource, idxDest);
         } else if (items[idxSource]->GetID() != items[idxDest]->GetID()) {  // Keduanya NonTool, ID beda
             if (quantity != items[idxSource]->GetQuantity()) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
-                return;
+                BaseException *e = new CustomException("Item cannot be moved to different item");
+                throw e;
             }
             Swap(idxSource, idxDest);
         } else {  // NonTool dengan ID sama
@@ -277,6 +299,8 @@ class Inventory {
                 if (isFull()) {
                     // throw Exception:
                     // inventory sudah full, item terbuang: {item_qty}
+                    BaseException *e = new CustomException("Inventory is full! " + to_string(item_qty) + " thrown");
+                    throw e;
                     stop = true;
                 } else {
                     // jika item adalah tool
@@ -310,6 +334,8 @@ class Inventory {
         } else {
             // throw Exception:
             // Tidak ada nama Item {item_name}
+            BaseException *e = new InvalidItemException(item_name);
+            throw e;
         }
     }
 
@@ -322,6 +348,8 @@ class Inventory {
         } else {
             // throw Exception:
             // tidak ada ID inventory {inventory_id}
+            BaseException *e = new CustomException("There is no inventory_id matched with " + inventory_id);
+            throw e;
         }
     }
 

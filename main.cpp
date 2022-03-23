@@ -10,15 +10,90 @@
 #include "class/Item.hpp"
 #include "class/NonTool.hpp"
 #include "class/Tool.hpp"
+#include "class/BaseException.hpp"
 
 using namespace std;
 
+static map<string, Item*> item_map;
+string config_path = "./config";
+string item_config_path = config_path + "/item.txt";
+string recipe_config_path = config_path + "/recipe";
+static map<int, vector<Recipes>> recipe_map;
+string command;
+Inventory inventory;
+
+void move(string slot_src, int slot_qty, string slot_dest) {
+    int idxSrc = (int)slot_src[1] - 48;
+    if (slot_src[0] == 'C') idxSrc += 27;
+    if (slot_src.length() > 2) idxSrc = idxSrc * 10 + (int)slot_src[2] - 48;
+    int idxDest;
+    string tempDest = "";
+    int count = 1;
+    // Menghitung jumlah slot yang dituju
+    for (int i = 1; i < slot_dest.length(); i++) {
+        if (slot_dest[i] == ' ') count++;
+    }
+    int amountPerStack = slot_qty / count;
+    int remainder = slot_qty % count;
+    // Membagi berdasarkan jumlah slot
+    for (int i = 1; i < slot_dest.length(); i++) {
+        if (slot_dest[i] == ' ' || i == slot_dest.length() - 1) {
+            if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
+            idxDest = (int)tempDest[1] - 48;
+            if (tempDest[0] == 'C') idxDest += 27;
+            if (tempDest.length() > 2) idxDest = idxDest * 10 + (int)tempDest[2] - 48;
+            if (remainder > 0) {
+                inventory.Move(idxSrc, amountPerStack + 1, idxDest);
+                remainder--;
+            } else {
+                inventory.Move(idxSrc, amountPerStack, idxDest);
+            }
+            tempDest = "";
+            ;
+        } else {
+            tempDest += slot_dest[i];
+        }
+    }
+}
+
+void command_input() {
+    cout << "COMMAND >>> ";
+    cin >> command;
+    if (command == "EXPORT") {
+        string output_path;
+        cin >> output_path;
+        ofstream output_file(output_path);
+    } else if (command == "CRAFT") {
+        inventory.Crafting(recipe_map, item_map);
+    } else if (command == "GIVE") {
+        string item_name;
+        int item_qty;
+        cin >> item_name >> item_qty;
+        if (item_qty < 0) {
+            BaseException *e = new InvalidNumberException(item_qty);
+            throw e;
+        }
+        inventory.Give(item_name, item_qty, item_map);
+    } else if (command == "MOVE") {
+        string slot_src;
+        int slot_qty;
+        string slot_dest;
+        // still need to handle multiple destinations
+        cin >> slot_src >> slot_qty;
+        getline(cin, slot_dest);
+        move(slot_src, slot_qty, slot_dest);
+    } else if (command == "USE") {
+        string inventory_id;
+        cin >> inventory_id;
+        inventory.Use(inventory_id);
+    } else {
+        BaseException *e = new InvalidCommandException(command);
+        throw e;
+    }
+}
+
 int main() {
     // read configuration file
-    map<string, Item*> item_map;
-    string config_path = "./config";
-    string item_config_path = config_path + "/item.txt";
-    string recipe_config_path = config_path + "/recipe";
 
     ifstream item_config_file(item_config_path);
     string line[4];
@@ -42,7 +117,6 @@ int main() {
     }
 
     // read recipes
-    map<int, vector<Recipes>> recipe_map;
     for (const auto& filerecipe : filesystem::directory_iterator(recipe_config_path)) {
         ifstream recipe_config_file(filerecipe.path());
         string temp;
@@ -79,71 +153,35 @@ int main() {
     }
 
     // sample interaction
-    string command;
-    Inventory inventory;
+
+    cout << "\nInventory:\n";
+    inventory.Show();
+    cout << endl;
 
     while (true) {
-        cout << "\nInventory:\n";
-        inventory.Show();
-        cout << endl;
-        cout << "COMMAND >>> ";
-        cin >> command;
-        if (command == "EXPORT") {
-            string output_path;
-            cin >> output_path;
-            ofstream output_file(output_path);
-        } else if (command == "CRAFT") {
-            inventory.Crafting(recipe_map, item_map);
-        } else if (command == "GIVE") {
-            string item_name;
-            int item_qty;
-            cin >> item_name >> item_qty;
-            inventory.Give(item_name, item_qty, item_map);
-        } else if (command == "MOVE") {
-            string slot_src;
-            int slot_qty;
-            string slot_dest;
-            // still need to handle multiple destinations
-            cin >> slot_src >> slot_qty;
-            getline(cin, slot_dest);
-            int idxSrc = (int)slot_src[1] - 48;
-            if (slot_src[0] == 'C') idxSrc += 27;
-            if (slot_src.length() > 2) idxSrc = idxSrc * 10 + (int)slot_src[2] - 48;
-            int idxDest;
-            string tempDest = "";
-            int count = 1;
-            // Menghitung jumlah slot yang dituju
-            for (int i = 1; i < slot_dest.length(); i++) {
-                if (slot_dest[i] == ' ') count++;
-            }
-            int amountPerStack = slot_qty / count;
-            int remainder = slot_qty % count;
-            // Membagi berdasarkan jumlah slot
-            for (int i = 1; i < slot_dest.length(); i++) {
-                if (slot_dest[i] == ' ' || i == slot_dest.length() - 1) {
-                    if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
-                    idxDest = (int)tempDest[1] - 48;
-                    if (tempDest[0] == 'C') idxDest += 27;
-                    if (tempDest.length() > 2) idxDest = idxDest * 10 + (int)tempDest[2] - 48;
-                    if (remainder > 0) {
-                        inventory.Move(idxSrc, amountPerStack + 1, idxDest);
-                        remainder--;
-                    } else {
-                        inventory.Move(idxSrc, amountPerStack, idxDest);
-                    }
-                    tempDest = "";
-                    ;
-                } else {
-                    tempDest += slot_dest[i];
-                }
-            }
-        } else if (command == "USE") {
-            string inventory_id;
-            cin >> inventory_id;
-            inventory.Use(inventory_id);
-        } else {
-            // todo
-            cout << "Invalid command" << endl;
+        CommandFailedException exception;
+        try
+        {
+            command_input();
+        }
+        catch(BaseException *e)
+        {
+            exception.addException(e);
+            cout << endl;
+            exception.printMessage();
+            cout << endl;
+        }
+        catch(CommandFailedException e)
+        {
+            exception.addException(e);
+            cout << endl;
+            exception.printMessage();
+            cout << endl;
+        }
+        if (exception.getIdx() == 0) {
+            cout << "\nInventory:\n";
+            inventory.Show();
+            cout << endl;
         }
     }
     return 0;

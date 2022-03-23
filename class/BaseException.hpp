@@ -18,7 +18,7 @@ public:
         this->number = number;
     }
     void printMessage() {
-        cout << "Angka " << number << " tidak valid" << endl;
+        cout << number << " is an invalid number" << endl;
     }
 };
 
@@ -30,7 +30,7 @@ public:
         this->item = item;
     }
     void printMessage() {
-        cout << "Item bernama " << item << " tidak ada" << endl;
+        cout << "Item " << item << " doesn't exist" << endl;
     }
 };
 
@@ -42,7 +42,38 @@ public:
         this->cmd = cmd;
     }
     void printMessage() {
-        cout << "Command " << cmd << " tidak ada" << endl;
+        cout <<  cmd << " is an invalid command" << endl;
+    }
+};
+
+class CommandFailedException {
+private:
+    BaseException** exc;
+    int idx;
+public:
+    CommandFailedException() {
+        exc = (BaseException**) malloc(sizeof(BaseException*));
+        idx = 0;
+    }
+    void addException(BaseException* exc) {
+        this->exc[idx] = exc;
+        idx++;
+    }
+    void addException(CommandFailedException cmd) {
+        for(int i = 0; i <= cmd.getIdx(); i++) {
+            this->exc[idx] = cmd.exc[i];
+            idx++;
+        }
+    }
+    void printMessage() {
+        cout << "Error Command with details:" << endl;
+        for (int i = 0; i < idx; i++) {
+            exc[i]->printMessage();
+        }
+    }
+
+    int getIdx() {
+        return idx;
     }
 };
 
