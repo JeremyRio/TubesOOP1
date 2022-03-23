@@ -273,8 +273,8 @@ class Inventory {
         if (item_map.find(item_name) != item_map.end()) {
             bool stop = false;
             int idx_item;
-            while (item_qty > 0) {
-                if (isFull() && !stop) {
+            while (item_qty > 0 && !stop) {
+                if (isFull()) {
                     // throw Exception:
                     // inventory sudah full, item terbuang: {item_qty}
                     stop = true;
