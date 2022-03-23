@@ -34,6 +34,8 @@ class Item {
     virtual void display_info();  // check info item aja (dihapusin aja)
     virtual void Use();
     virtual void DisplayItem();
+    virtual int GetDurability() const;
+    virtual void SetDurability(int durability);
 };
 
 #endif

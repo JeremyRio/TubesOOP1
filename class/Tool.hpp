@@ -12,11 +12,11 @@ class Tool : public Item {
     Tool(int id, string name, string type, int durability);
     Tool(const Tool &t);
     Tool &operator=(const Tool &t);
-    int get_durability() const;
+    int GetDurability() const;
     void Use();
-    void set_durability(int durability);
-    void add_durability(int durability);
-    void remove_durability(int durability);
+    void SetDurability(int durability);
+    void AddDurability(int durability);
+    void RemoveDurability(int durability);
     void display_info();  // check info item aja (dihapusin aja)
     void DisplayItem();
 };

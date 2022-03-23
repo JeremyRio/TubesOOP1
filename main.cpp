@@ -6,9 +6,9 @@
 #include <map>
 #include <string>
 
+#include "class/Inventory.hpp"
 #include "class/Item.hpp"
 #include "class/NonTool.hpp"
-#include "class/Inventory.hpp"
 #include "class/Tool.hpp"
 
 using namespace std;
@@ -42,45 +42,46 @@ int main() {
     }
 
     // read recipes
-    map<string, Recipes*> recipe_map;
+    map<int, vector<Recipes>> recipe_map;
     for (const auto& filerecipe : filesystem::directory_iterator(recipe_config_path)) {
         ifstream recipe_config_file(filerecipe.path());
-        string tempr;
-        int cnt = 0;
-        int sum = 1;
-        string contain_recipes[14];
+        string temp;
+        string line[13];
+        int i = 0;
         for (string recipe_lines; getline(recipe_config_file, recipe_lines);) {
             // Traverse the string
             for (auto& ch : recipe_lines) {
-                if (ch == ' ') {
-                    contain_recipes[cnt] = tempr;
-                    tempr = "";
-                    cnt++;
-                } else
-                    tempr += ch;
+                if (ch != ' ') {
+                    temp += ch;
+                } else {
+                    line[i++] = temp;
+                    temp = "";
+                }
             }
-            contain_recipes[cnt] = tempr;
-            tempr = "";
-            cnt++;
+            line[i++] = temp;
+            temp = "";
         }
-        int size = stoi(contain_recipes[0]) * stoi(contain_recipes[1]);
-        Recipes* r = new Recipes(stoi(contain_recipes[0]), stoi(contain_recipes[1]), contain_recipes[2 + size], stoi(contain_recipes[3 + size]));
-        for (int i = 2; i < 2 + size; i++) {
-            (*r) << contain_recipes[i];
+        int row = stoi(line[0]);
+        int col = stoi(line[1]);
+        int size = row * col;
+        Recipes recipe(row, col, line[2 + size], stoi(line[3 + size]));
+        int count = 0;
+        for (i = 0; i < size; i++) {
+            if (line[2 + i] != "-") {
+                count++;
+            }
+            recipe.SetRecipeIngredient(i, line[2 + i]);
         }
-        recipe_map[contain_recipes[2 + size]] = r;
+        // testing
+        recipe.DisplayInfo();
+        //
+        recipe_map[count].push_back(recipe);
     }
-
-    // checking if it works
-    // for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
-    //     it1->second->print_info();
-    //     cout << it1->first << endl;
-    // }
 
     // sample interaction
     string command;
     Inventory inventory;
-    
+
     while (true) {
         cout << "\nInventory:\n";
         inventory.Show();
@@ -92,7 +93,7 @@ int main() {
             cin >> output_path;
             ofstream output_file(output_path);
         } else if (command == "CRAFT") {
-            inventory.Crafting(recipe_map,item_map);
+            inventory.Crafting(recipe_map, item_map);
         } else if (command == "GIVE") {
             string item_name;
             int item_qty;
@@ -105,32 +106,33 @@ int main() {
             // still need to handle multiple destinations
             cin >> slot_src >> slot_qty;
             getline(cin, slot_dest);
-            int idxSrc = (int)slot_src[1]-48;
-            if (slot_src[0] == 'C') idxSrc+=27;
-            if (slot_src.length() > 2) idxSrc = idxSrc*10+(int)slot_src[2]-48;
+            int idxSrc = (int)slot_src[1] - 48;
+            if (slot_src[0] == 'C') idxSrc += 27;
+            if (slot_src.length() > 2) idxSrc = idxSrc * 10 + (int)slot_src[2] - 48;
             int idxDest;
             string tempDest = "";
             int count = 1;
             // Menghitung jumlah slot yang dituju
-            for (int i = 1; i < slot_dest.length(); i++){
+            for (int i = 1; i < slot_dest.length(); i++) {
                 if (slot_dest[i] == ' ') count++;
             }
             int amountPerStack = slot_qty / count;
             int remainder = slot_qty % count;
             // Membagi berdasarkan jumlah slot
-            for (int i = 1; i < slot_dest.length(); i++){
-                if (slot_dest[i] == ' ' || i == slot_dest.length()-1){
-                    if (i == slot_dest.length()-1) tempDest += slot_dest[i];
-                    idxDest = (int)tempDest[1]-48;
-                    if (tempDest[0] == 'C') idxDest+=27;
-                    if (tempDest.length() > 2) idxDest = idxDest*10+(int)tempDest[2]-48;
-                    if (remainder > 0){
-                        inventory.Move(idxSrc, amountPerStack+1, idxDest);
+            for (int i = 1; i < slot_dest.length(); i++) {
+                if (slot_dest[i] == ' ' || i == slot_dest.length() - 1) {
+                    if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
+                    idxDest = (int)tempDest[1] - 48;
+                    if (tempDest[0] == 'C') idxDest += 27;
+                    if (tempDest.length() > 2) idxDest = idxDest * 10 + (int)tempDest[2] - 48;
+                    if (remainder > 0) {
+                        inventory.Move(idxSrc, amountPerStack + 1, idxDest);
                         remainder--;
                     } else {
                         inventory.Move(idxSrc, amountPerStack, idxDest);
                     }
-                    tempDest = "";;
+                    tempDest = "";
+                    ;
                 } else {
                     tempDest += slot_dest[i];
                 }

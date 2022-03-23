@@ -3,94 +3,89 @@
 Recipes::Recipes() {
     this->row = 0;
     this->col = 0;
-    this->make = new string[0];
+    this->recipe_array = new string[0];
     this->name = "none";
     this->craft_quantity = 0;
 }
+
 Recipes::Recipes(int row, int col, string name, int craft_quantity) {
     this->row = row;
     this->col = col;
-    this->make = new string[row * col];
+    this->recipe_array = new string[row * col];
     this->name = name;
     this->craft_quantity = craft_quantity;
-    this->neff = 0;
 }
 
-Recipes::Recipes(Recipes& other) : neff(0), row(other.row), col(other.col), name(other.name), craft_quantity(other.craft_quantity) {
-    this->make = new string[row * col];
-    for (int i = 0; i < other.neff; i++) {
-        this->make[i] = other.make[i];
-        this->neff++;
+Recipes::Recipes(const Recipes& r) {
+    this->row = r.row;
+    this->col = r.col;
+    this->recipe_array = new string[row * col];
+    this->name = r.name;
+    this->craft_quantity = r.craft_quantity;
+    for (int i = 0; i < row * col; i++) {
+        this->recipe_array[i] = r.recipe_array[i];
     }
 }
 
 Recipes::~Recipes() {
-    delete[] this->make;
+    delete[] this->recipe_array;
 }
 
 Recipes& Recipes::operator=(const Recipes& other) {
-    delete[] make;  // bebaskan memory yang digunakan sebelumnya
+    delete[] recipe_array;  // bebaskan memory yang digunakan sebelumnya
     this->row = other.row;
     this->col = other.col;
     this->name = other.name;
     this->craft_quantity = other.craft_quantity;
-    this->neff = 0;
-    this->make = new string[row * col];
-    for (int i = 0; i < other.neff; i++) {
-        this->make[i] = other.make[i];
-        this->neff++;
-    }
+    this->recipe_array = new string[row * col];
     return *this;
 }
 
-void Recipes::print_info() {
-    cout << "[";
-    for (int i = 0; i < neff; i++) {
-        cout << this->make[i];
-        if (i != neff - 1) {
-            cout << ",";
-        }
-    }
-    cout << "]";
-}
-
-int Recipes::getrow(){
+int Recipes::GetRow() const {
     return this->row;
 }
 
-int Recipes::getcol(){
+int Recipes::GetCol() const {
     return this->col;
 }
 
-int Recipes::getCraftQuantity(){
+int Recipes::GetCraftQuantity() const {
     return this->craft_quantity;
 }
 
-int Recipes::getneff(){
-    return this->neff;
+string Recipes::GetName() const {
+    return this->name;
 }
 
-string Recipes::GetRecipeIngredients(int idx) const{
-    return this->make[idx];
+void Recipes::SetRecipeIngredient(int idx, string ingredient) {
+    this->recipe_array[idx] = ingredient;
 }
 
-Recipes& Recipes::operator<<(string bahan) {
-    this->make[this->neff] = bahan;
-    this->neff += 1;
-    return *this;
+string& Recipes::operator[](int idx) {
+    return this->recipe_array[idx];
 }
 
-Recipes& Recipes::Mirrored_Y_Recipe(){
+Recipes& Recipes::Mirrored_Y_Recipe() {
     string temp;
-    if (!getcol() == 1){
-        int switchidx = getcol()-1;
-        for (int i = 0; i < 3*getcol(); i++) {
+    if (!GetCol() == 1) {
+        int switchidx = GetCol() - 1;
+        for (int i = 0; i < 3 * GetCol(); i++) {
             // swapping elements
-            temp = this->make[i];
-            this->make[i] = this->make[i+switchidx];
-            this->make[i+switchidx] = temp;
-
+            temp = this->recipe_array[i];
+            this->recipe_array[i] = this->recipe_array[i + switchidx];
+            this->recipe_array[i + switchidx] = temp;
         }
     }
     return *this;
+}
+
+void Recipes::DisplayInfo() {
+    cout << "Recipe: " << this->name << endl;
+    for (int i = 0; i < this->row; i++) {
+        for (int j = 0; j < this->col; j++) {
+            cout << this->recipe_array[i * this->col + j] << " ";
+        }
+        cout << endl;
+    }
+    cout << GetCraftQuantity() << endl;
 }

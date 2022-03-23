@@ -3,40 +3,41 @@
 #include <iostream>
 using namespace std;
 
-class Recipes{
-private:
-    string* make;
+class Recipes {
+    private:
+    string* recipe_array;
     int row;
     int col;
-    string name;
     int craft_quantity;
-    int neff;
+    string name;
+    bool is_type;
 
-public:
-    //ctor default
+    public:
+    // ctor default
     Recipes();
-    //ctor
+    // ctor
     Recipes(int row, int col, string name, int craft_quantity);
-    //cctor
-    Recipes(Recipes& other);
-    //dtor
+    // cctor
+    Recipes(const Recipes&);
+    // dtor
     ~Recipes();
-    //operator=
+    // operator=
     Recipes& operator=(const Recipes& other);
-    //methods
+    // methods
     void print_info();
-    int getneff();
-    int getrow();
-    int getcol();
-    string GetRecipeIngredients(int idx) const;
-    int getCraftQuantity();
-    //menambahkan elemen ke dalam array make
+    int GetNeff() const;
+    int GetRow() const;
+    int GetCol() const;
+    int GetCraftQuantity() const;
+    string GetName() const;
+    void SetRecipeIngredient(int idx, string ingredient);
+    string& operator[](int idx);
+    void DisplayInfo();
+    // menambahkan elemen ke dalam array make
     Recipes& operator<<(string bahan);
 
-    //manipulasi recipes
-    
+    // manipulasi recipes
     Recipes& Mirrored_Y_Recipe();
-
 };
 
 #endif

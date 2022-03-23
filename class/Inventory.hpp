@@ -1,13 +1,17 @@
 #include <iostream>
 #include <map>
+#include <vector>
 
 #include "Item.hpp"
+#include "NonTool.hpp"
 #include "Recipes.hpp"
 #include "Tool.hpp"
-#include "NonTool.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
 #define MAX_CRAFT 9
+#define CRAFT_BOUNDARY 3
+#define CRAFTING_SLOT(i, j, k, l) (i * CRAFT_BOUNDARY + j + MAX_INVENTORY + k * CRAFT_BOUNDARY + l)
+#define CRAFTING_INDEX(i) (MAX_INVENTORY + i)
 
 class Inventory {
     private:
@@ -23,11 +27,19 @@ class Inventory {
         }
     }
 
+    ~Inventory() {
+        delete[] items;
+    }
+
     bool IsEmpty(int idx) {
         return items[idx]->get_quantity() == 0;
     }
 
     static bool IsTool(Item* item) {
+        // testing
+        // cout << "Type id: " << typeid(*item).name() << endl;
+        // cout << "Item Name: " << item->get_name() << endl;
+        //
         return (typeid(*item) == typeid(Tool));
     }
 
@@ -41,18 +53,14 @@ class Inventory {
     }
 
     void Add(int idx, Item* item) {
-        if (IsEmpty(idx)) {
-            ReplaceSlot(idx, item);
-            this->size++;
-        } else {
-            if (IsTool(items[idx]) || items[idx]->get_id() != item->get_id()) {
-                // throw Exception:
-                // Tidak dapat menambahkan item pada ID berbeda atau pada item Tool
-            }
-            items[idx]->add_quantity(item->get_quantity());
-            // Stack atau Swap item
-            // Komen: Kayaknya Stack atau Swap item bukan disini, tapi di Move
-        }
+        ReplaceSlot(idx, item);
+        this->size++;
+    }
+
+    void Add(int idx, Item* item, int durability) {
+        ReplaceSlot(idx, item);
+        this->size++;
+        items[idx]->SetDurability(durability);
     }
 
     void Discard(int idx, int item_qty) {
@@ -204,18 +212,16 @@ class Inventory {
         return this->size == MAX_INVENTORY;
     }
 
-    int getSizeCraft(){
-        int cnt_tool = 10;
-        int cnt_non_tool = 20;
-        for (int i = MAX_INVENTORY; i < 36; i++){
-            if (items[i]->get_quantity()>0)
-                if (IsTool(items[i])) {cnt_tool++;}
-                else {cnt_non_tool++;}
+    void GetItemCountInCrafting(int& item_count_tool, int& item_count_nontool) {
+        for (int i = 0; i < MAX_CRAFT; i++) {
+            if (items[MAX_INVENTORY + i]->get_quantity() > 0) {
+                if (IsTool(items[MAX_INVENTORY + i])) {
+                    item_count_tool++;
+                } else {
+                    item_count_nontool++;
+                }
+            }
         }
-        if (cnt_tool != 10 && cnt_non_tool != 20) {return -1;}
-        else if (cnt_non_tool == 20 && cnt_non_tool != 10) {return cnt_tool;}
-        else if (cnt_tool == 10) {return cnt_non_tool;}
-        else {return 0;}
     }
 
     void Display() {
@@ -263,24 +269,29 @@ class Inventory {
         }
     }
 
-    void Give(string& item_name, int& item_qty, map<string, Item*>& item_map) {
+    void Give(string item_name, int item_qty, map<string, Item*>& item_map, int durability = 10) {
         if (item_map.find(item_name) != item_map.end()) {
             bool stop = false;
             int idx_item;
-            while (item_qty > 0 && !stop) {
-                if (isFull()) {
+            while (item_qty > 0) {
+                if (isFull() && !stop) {
                     // throw Exception:
                     // inventory sudah full, item terbuang: {item_qty}
                     stop = true;
                 } else {
-                    if (Inventory::IsTool(item_map[item_name])) {
+                    // jika item adalah tool
+                    if (IsTool(item_map[item_name])) {
                         idx_item = GetEmptySlot();
                         if (idx_item != -1) {
-                            // item not found, add empty slot
-                            Add(idx_item, item_map[item_name]);
+                            if (durability == 10) {
+                                Add(idx_item, item_map[item_name]);
+                            } else {
+                                Add(idx_item, item_map[item_name], durability);
+                            }
                             item_qty--;
                         }
                     } else {
+                        // jika item adalah nontool
                         idx_item = FindItemNotFull(item_name);
                         if (idx_item == -1) {
                             idx_item = GetEmptySlot();
@@ -305,7 +316,7 @@ class Inventory {
     void Use(string inventory_id) {
         int idx = GetIdx(inventory_id);
         if (inventory_id[0] == 'I' && idx >= 0 && idx <= 27) {
-            if (Inventory::IsTool(items[idx]) && items[idx]->get_quantity() > 0) {
+            if (IsTool(items[idx]) && items[idx]->get_quantity() > 0) {
                 items[idx]->Use();
             }
         } else {
@@ -314,167 +325,116 @@ class Inventory {
         }
     }
 
-    void Crafting(map<string, Recipes*>& recipe_map, map<string, Item*>& item_map){
-        // mengambil jumlah elemen dalam slot crafting
-        int effective_elements = getSizeCraft();
-        string result;
-        bool found = false;
+    void Crafting(map<int, vector<Recipes>> recipe_map, map<string, Item*>& item_map) {
+        bool is_crafting = true;
+        int item_count_tool = 0;
+        int item_count_nontool = 0;
+        GetItemCountInCrafting(item_count_tool, item_count_nontool);
 
-        // jika slot valid dimana tidak ada campuran antara tool dan non tool di slot crafting
-        if (effective_elements != -1 || effective_elements != 0){
-            // memeriksa yang non tool
-            if (effective_elements > 20){
-                effective_elements -=20;
+        // testing
+        cout << "item_count_tool: " << item_count_tool << endl;
+        cout << "item_count_nontool: " << item_count_nontool << endl;
+        //
 
-                for (auto it1 = recipe_map.begin(); it1 != recipe_map.end(); ++it1) {
-                    // Pemeriksaan yang elemen membuat tool
-                    found = LetThisMatch(it1->second);
-                    result = it1->first;
-                    if (found){break;} 
-                }
-            }
-            else{
-                // untuk periksa tool
-                effective_elements-=10;
-                MatchingTools(effective_elements);
-                return;
-            }
-            // Pengurangan barang slot (masih 1 kuantitas)
-            if (found){
-                for (int i = 27 ; i < 36; i++){
-                    if (items[i]->get_name() != "-"){
-                        Discard(i,1);
+        // jika slot tidak valid dimana terdapat campuran antara tool dan non tool di slot crafting
+        while (is_crafting) {
+            is_crafting = false;
+            if (item_count_nontool > 0 && item_count_tool == 0 && recipe_map.find(item_count_nontool) != recipe_map.end()) {
+                // jika hanya terdapat item nontool dalam crafting
+                for (auto& recipe : recipe_map[item_count_nontool]) {
+                    int i, j;
+                    int recipe_row = recipe.GetRow();
+                    int recipe_col = recipe.GetCol();
+                    is_crafting = SubMatrix(recipe_row, recipe_col, recipe, item_map);
+                    if (is_crafting) {
+                        break;
                     }
+                    // testing
+                    // cout << "Recipe: " << recipe.GetName() << endl;
                 }
-                int itm_quantity = recipe_map.find(result)->second->getCraftQuantity();
-                cout << "\nYou succeded in making " << itm_quantity << " " << result << endl;
-                Give(result, itm_quantity ,item_map);    
-            }
-            else{
-                cout << "\n You Couldm't make anything!! " << endl;
+            } else if (item_count_tool == 2 && item_count_nontool == 0) {
+                // jika hanya terdapat item tool dalam crafting
+                int idx_tool[2];
+                GetIndexToolInCrafting(idx_tool);
+                if (items[idx_tool[0]]->get_name() == items[idx_tool[1]]->get_name()) {
+                    int total_durability = min(items[idx_tool[0]]->GetDurability() + items[idx_tool[1]]->GetDurability(), 10);
+                    Give(items[idx_tool[0]]->get_name(), 1, item_map, total_durability);
+                    Discard(idx_tool[0], 1);
+                    Discard(idx_tool[1], 1);
+                }
+            } else {
+                // jika crafting tidak valid yaitu terdapat campuran antara tool dan non tool di slot crafting atau tidak memenuhi kondisi di atas
             }
         }
     }
 
-    void MatchingTools(int effective_elements){
-        int cnt = 1;
-        string temp1;
-        int first_index, second_index;
-        bool first = false;
-        bool found = false;
-        if (effective_elements == 2){
-            for (int i = 27 ; i < 36; i++){
-                if (items[i]->get_name() != "-" && !first){
-                    temp1 = items[i]->get_name();
-                    first_index = i;
-                    first = true;
-                }
-                else if (first && items[i]->get_name()== temp1){
-                    second_index = i;
-                    found = true;
-                }
+    void GetIndexToolInCrafting(int* idx_tool) {
+        int idx = 0;
+        for (int i = 0; i < MAX_CRAFT; i++) {
+            int idx_crafting = i + MAX_INVENTORY;
+            if (items[idx_crafting]->get_quantity() > 0) {
+                idx_tool[idx++] = idx_crafting;
             }
-        } else {
-            // throw exception tidak bisa buat item
-            return;
-        }
-        if (found){
-            int durability = ((Tool*)items[second_index])->get_durability();
-            ((Tool*)items[first_index])->add_durability(durability);
-            for (int i=0; i < MAX_INVENTORY; i++){
-                if (IsEmpty(i)){
-                    Move(first_index, 1,i);
-                    Discard(first_index,1);
-                    Discard(second_index,1);
-                    return;
-                }
-            }
-            // handle exception inventory sudah full, item terbuang: 2 quantity
-        }
-        else {
-            // handle exception bukan nama tool yang sama
         }
     }
 
-    void getBoundary(int& brow1, int& brow2, int& bcol1, int& bcol2, int& nrow, int& ncol){
-        int row[3] = {};
-        int col[3] = {};
-        ncol = 0;
-        nrow = 0; 
-        int count = 0;
-        for (int i = 27; i < 36; i += 3) {
-            for (int j = 0; j < 3; j++) {
-                if (items[i+j]->get_name() == "-") {
-                    col[j]++;
-                    row[i-27-count]++;
+    bool SubMatrix(int recipe_row, int recipe_col, Recipes recipe, map<string, Item*>& item_map) {
+        for (int i = 0; i + recipe_row - 1 < CRAFT_BOUNDARY; i++) {
+            for (int j = 0; j + recipe_col - 1 < CRAFT_BOUNDARY; j++) {
+                bool match = MatchRecipe(i, j, recipe_row, recipe_col, recipe);
+                if (!match) {
+                    match = InverseMatchRecipe(i, j, recipe_row, recipe_col, recipe);
+                }
+                if (match) {
+                    for (int k = 0; k < recipe_row; k++) {
+                        for (int l = 0; l < recipe_col; l++) {
+                            int crafting_slot = CRAFTING_SLOT(i, j, k, l);
+                            Discard(crafting_slot, 1);
+                        }
+                    }
+                    int craft_quantity = recipe.GetCraftQuantity();
+                    string name = recipe.GetName();
+                    // testing
+                    recipe.DisplayInfo();
+                    cout << "Crafting: " << name << endl;
+                    cout << "Quantity: " << craft_quantity << endl;
+                    //
+                    Give(name, craft_quantity, item_map);
+                    return true;
                 }
             }
-            count += 2;
-        }
-        for (int i =0; i < 3; i++) {
-            if (row[i] == 3){
-                nrow++;
-            }
-            if (col[i] == 3){
-                ncol++;
-            }
-        }
-        nrow = 3 - nrow;
-        ncol = 3 - ncol;
-        int lastr = 0;
-        int firstr = 0;
-        int lastc = 3;
-        int firstc = 0;
-        if (row[2] == 3) {
-            lastr = 1;
-            if (row[1] == 3) { lastr = 2;}
-            else if ( row[0] == 3) { firstr = 1; } 
-        }
-        else if (row[0] == 3) {
-            firstr = 1;
-            if (row[1] == 3) { firstr++; }
-
-        }
-        if (col[0] == 3) {
-            firstc++;
-            if (col[2] == 3) { lastc--;  }
-            else if ( col[1] == 3) { firstc++; }
-        }
-        else if (col[2] == 3) {
-            lastc = 2;
-            if (col[1] == 3) { lastc--;}
-        }
-
-        brow1 = firstr;
-        brow2 = lastr;
-        bcol1 = firstc;
-        bcol2 = lastc;
-    }
-
-    bool sameSubMatrix(Recipes& r) {
-        int brow1,brow2,bcol1,bcol2,nrow,ncol;
-        this->getBoundary(brow1,brow2,bcol1,bcol2,nrow,ncol);
-        int cnt = 0;
-        if (r.getrow() == nrow && r.getcol() == ncol){
-            for (int i = 27 + brow1*3 ; i < 27 + (9 - brow2*3) ; i+=3 ) {
-                for (int j = bcol1; j < bcol2 ; j++) {
-                    if ( items[i+j]->get_type() != r.GetRecipeIngredients(cnt) && items[i+j]->get_name() != r.GetRecipeIngredients(cnt) ) {return false;}
-                    cnt++;
-                }
-            }
-            return true;
         }
         return false;
     }
 
-    bool LetThisMatch(Recipes* r){
-        Recipes *temp = new Recipes(*r);
-        for (int i = 0; i < 2; i++) {
-            if (i == 1) {
-                temp->Mirrored_Y_Recipe();
+    bool InverseMatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipes recipe) {
+        for (int k = 0; k < recipe_row; k++) {
+            for (int l = 0; l < recipe_col; l++) {
+                int crafting_slot = CRAFTING_SLOT(i, j, k, l);
+                int recipe_slot = k * recipe_col + recipe_col - l - 1;
+                if (items[crafting_slot]->get_name() != recipe[recipe_slot] && items[crafting_slot]->get_type() != recipe[recipe_slot]) {
+                    return false;
+                }
             }
-            if ( this->sameSubMatrix(*temp) ) {return true;}
         }
-        return false;
+        return true;
+    }
+
+    bool MatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipes recipe) {
+        for (int k = 0; k < recipe_row; k++) {
+            for (int l = 0; l < recipe_col; l++) {
+                int crafting_slot = CRAFTING_SLOT(i, j, k, l);
+                int recipe_slot = k * recipe_col + l;
+                // testing
+                // cout << "(i, j, k, l) = " << i << ", " << j << ", " << k << ", " << l << endl;
+                // cout << "crafting_slot: I" << crafting_slot << endl;
+                // cout << "recipe_slot: " << recipe_slot << endl;
+                //
+                if (items[crafting_slot]->get_name() != recipe[recipe_slot] && items[crafting_slot]->get_type() != recipe[recipe_slot]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 };

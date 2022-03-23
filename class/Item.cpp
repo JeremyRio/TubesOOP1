@@ -76,7 +76,7 @@ void Item::remove_quantity(int quantity) {
     }
     this->set_quantity(this->get_quantity() - quantity);
 
-    if (this->get_quantity() == 0){
+    if (this->get_quantity() == 0) {
         this->set_id(0);
         this->set_name("-");
         this->set_type("-");
@@ -96,5 +96,13 @@ void Item::Use() {
 }
 
 void Item::DisplayItem() {
+    // do nothing
+}
+
+int Item::GetDurability() const {
+    return 0;
+}
+
+void Item::SetDurability(int durability) {
     // do nothing
 }

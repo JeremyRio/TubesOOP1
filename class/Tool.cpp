@@ -27,26 +27,26 @@ Tool &Tool::operator=(const Tool &t) {
     return *this;
 }
 
-int Tool::get_durability() const {
+int Tool::GetDurability() const {
     return this->durability;
 }
 
-void Tool::set_durability(int durability) {
+void Tool::SetDurability(int durability) {
     this->durability = durability;
 }
 
-void Tool::add_durability(int durability) {
-    this->set_durability(min(10, this->get_durability() + durability));
+void Tool::AddDurability(int durability) {
+    this->SetDurability(min(10, this->GetDurability() + durability));
 }
 
-void Tool::remove_durability(int durability) {
-    this->set_durability(max(0, this->get_durability() - durability));
+void Tool::RemoveDurability(int durability) {
+    this->SetDurability(max(0, this->GetDurability() - durability));
 }
 
 void Tool::display_info() {
     cout << "Item: Tool" << endl;
     Item::display_info();
-    cout << "Durability: " << get_durability() << endl;
+    cout << "Durability: " << GetDurability() << endl;
 }
 
 void Tool::Use() {
