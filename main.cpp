@@ -169,14 +169,12 @@ int main() {
             exception.addException(e);
             cout << endl;
             exception.printMessage();
-            cout << endl;
         }
         catch(CommandFailedException e)
         {
             exception.addException(e);
             cout << endl;
             exception.printMessage();
-            cout << endl;
         }
         if (exception.getIdx() == 0) {
             cout << "\nInventory:\n";

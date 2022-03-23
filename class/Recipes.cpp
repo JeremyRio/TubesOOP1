@@ -61,7 +61,7 @@ void Recipes::SetRecipeIngredient(int idx, string ingredient) {
     this->recipe_array[idx] = ingredient;
 }
 
-string& Recipes::operator[](int idx) {
+string& Recipes::operator[](int idx) const {
     return this->recipe_array[idx];
 }
 
