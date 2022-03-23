@@ -25,6 +25,8 @@ NonTool &NonTool::operator=(const NonTool &nt) {
 
 void NonTool::Stack(Item item_source, int quantity, Item item_destination) {
     if (item_source.GetID() != item_destination.GetID()) {
+        BaseException *e = new CustomException("Item in source and destination have to be the same item");
+        throw e;
         // throw Exception: ID item beda
     } else {
         if (item_source.GetQuantity() <= quantity) {
@@ -37,6 +39,8 @@ void NonTool::Stack(Item item_source, int quantity, Item item_destination) {
                 item_source.SetQuantity(item_source.GetQuantity() - quantity);
             }
         } else {
+            BaseException *e = new CustomException("Quantity is more than what is available");
+            throw e;
             // throw Exception:
             // jumlah yang diminta buat dipindah lebih dari jumlah item yang ada
         }
@@ -51,6 +55,8 @@ void NonTool::DisplayInfo() {
 }
 
 void NonTool::Use() {
+    BaseException *e = new InvalidToolException(this->name);
+    throw e;
     // throw Exception:
     // Item bukan merupakan tool
 }

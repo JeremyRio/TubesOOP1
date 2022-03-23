@@ -2,6 +2,7 @@
 #define NONTOOL_HPP
 
 #include "Item.hpp"
+#include "BaseException.hpp"
 
 class NonTool : public Item {
     public:

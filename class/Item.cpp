@@ -65,6 +65,8 @@ void Item::SetQuantity(int quantity) {
 
 void Item::AddQuantity(int quantity) {
     if (this->GetQuantity() + quantity > MAX_QTY) {
+        BaseException *e = new CustomException("Total quantity is too much");
+        throw e;
         // throw Exception: item kelebihan
     }
     this->SetQuantity(this->GetQuantity() + quantity);
@@ -72,6 +74,8 @@ void Item::AddQuantity(int quantity) {
 
 void Item::RemoveQuantity(int quantity) {
     if (this->GetQuantity() - quantity < 0) {
+        BaseException *e = new CustomException("Total quantity is less than 0");
+        throw e;
         // throw Exception: item kekurangan
     }
     this->SetQuantity(this->GetQuantity() - quantity);

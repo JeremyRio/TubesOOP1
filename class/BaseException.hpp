@@ -77,6 +77,19 @@ class InventoryFullException : public BaseException {
     }
 };
 
+class InvalidToolException : public BaseException {
+    private:
+    string item_name;
+
+    public:
+    InvalidToolException(string item_name) {
+        this->item_name = item_name;
+    };
+    void printMessage() {
+        cout << "NonTool " << item_name << " is not usable" << endl;
+    }
+};
+
 class CommandFailedException {
 private:
     BaseException** exc;
@@ -105,6 +118,19 @@ public:
 
     int getIdx() {
         return idx;
+    }
+};
+
+
+class CustomException : public BaseException {
+private:
+    string message;
+public:
+    CustomException(string message) {
+        this->message = message;
+    }
+    void printMessage() {
+        cout << message << endl;
     }
 };
 #endif

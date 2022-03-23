@@ -4,6 +4,8 @@
 #define MAX_QTY 64
 #define MAX_DURABILITY 10
 
+#include "BaseException.hpp"
+
 #include <string>
 using namespace std;
 
