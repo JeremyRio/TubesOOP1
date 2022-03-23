@@ -12,7 +12,7 @@ class NonTool : public Item {
     NonTool &operator=(const NonTool &t);
     void Stack(Item item_source, int quantity, Item item_destination);
     void Use();
-    void display_info();  // check info item aja (dihapusin aja)
+    void DisplayInfo();  // check info item aja (dihapusin aja)
     void DisplayItem();
 };
 

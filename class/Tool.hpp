@@ -17,7 +17,7 @@ class Tool : public Item {
     void SetDurability(int durability);
     void AddDurability(int durability);
     void RemoveDurability(int durability);
-    void display_info();  // check info item aja (dihapusin aja)
+    void DisplayInfo();  // check info item aja (dihapusin aja)
     void DisplayItem();
 };
 

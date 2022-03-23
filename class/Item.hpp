@@ -19,20 +19,19 @@ class Item {
     Item(int id, string name, string type, int quantity);
     Item(const Item &t);
     Item &operator=(const Item &t);
-    int get_id() const;
-    string get_name() const;
-    string get_type() const;
-    int get_quantity() const;
+    int GetID() const;
+    string GetName() const;
+    string GetType() const;
+    int GetQuantity() const;
 
-    void set_id(int id);
-    void set_name(string name);
-    void set_type(string type);
-    void set_quantity(int quantity);
-
-    void add_quantity(int quantity);
-    void remove_quantity(int quantity);
-    virtual void display_info();  // check info item aja (dihapusin aja)
+    void SetID(int id);
+    void SetName(string name);
+    void SetType(string type);
+    void SetQuantity(int quantity);
+    void AddQuantity(int quantity);
+    void RemoveQuantity(int quantity);
     virtual void Use();
+    virtual void DisplayInfo();
     virtual void DisplayItem();
     virtual int GetDurability() const;
     virtual void SetDurability(int durability);

@@ -43,9 +43,9 @@ void Tool::RemoveDurability(int durability) {
     this->SetDurability(max(0, this->GetDurability() - durability));
 }
 
-void Tool::display_info() {
+void Tool::DisplayInfo() {
     cout << "Item: Tool" << endl;
-    Item::display_info();
+    Item::DisplayInfo();
     cout << "Durability: " << GetDurability() << endl;
 }
 

@@ -31,13 +31,8 @@ class Recipes {
     int GetCraftQuantity() const;
     string GetName() const;
     void SetRecipeIngredient(int idx, string ingredient);
-    string& operator[](int idx);
     void DisplayInfo();
-    // menambahkan elemen ke dalam array make
-    Recipes& operator<<(string bahan);
-
-    // manipulasi recipes
-    Recipes& Mirrored_Y_Recipe();
+    string& operator[](int idx);
 };
 
 #endif

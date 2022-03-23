@@ -65,20 +65,6 @@ string& Recipes::operator[](int idx) {
     return this->recipe_array[idx];
 }
 
-Recipes& Recipes::Mirrored_Y_Recipe() {
-    string temp;
-    if (!GetCol() == 1) {
-        int switchidx = GetCol() - 1;
-        for (int i = 0; i < 3 * GetCol(); i++) {
-            // swapping elements
-            temp = this->recipe_array[i];
-            this->recipe_array[i] = this->recipe_array[i + switchidx];
-            this->recipe_array[i + switchidx] = temp;
-        }
-    }
-    return *this;
-}
-
 void Recipes::DisplayInfo() {
     cout << "Recipe: " << this->name << endl;
     for (int i = 0; i < this->row; i++) {

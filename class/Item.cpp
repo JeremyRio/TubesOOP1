@@ -31,64 +31,64 @@ Item &Item::operator=(const Item &item) {
     return *this;
 }
 
-int Item::get_id() const {
+int Item::GetID() const {
     return this->id;
 }
 
-string Item::get_name() const {
+string Item::GetName() const {
     return this->name;
 }
 
-string Item::get_type() const {
+string Item::GetType() const {
     return this->type;
 }
 
-int Item::get_quantity() const {
+int Item::GetQuantity() const {
     return this->quantity;
 }
 
-void Item::set_id(int id) {
+void Item::SetID(int id) {
     this->id = id;
 }
 
-void Item::set_name(string name) {
+void Item::SetName(string name) {
     this->name = name;
 }
 
-void Item::set_type(string type) {
+void Item::SetType(string type) {
     this->type = type;
 }
 
-void Item::set_quantity(int quantity) {
+void Item::SetQuantity(int quantity) {
     this->quantity = quantity;
 }
 
-void Item::add_quantity(int quantity) {
-    if (this->get_quantity() + quantity > MAX_QTY) {
+void Item::AddQuantity(int quantity) {
+    if (this->GetQuantity() + quantity > MAX_QTY) {
         // throw Exception: item kelebihan
     }
-    this->set_quantity(this->get_quantity() + quantity);
+    this->SetQuantity(this->GetQuantity() + quantity);
 }
 
-void Item::remove_quantity(int quantity) {
-    if (this->get_quantity() - quantity < 0) {
+void Item::RemoveQuantity(int quantity) {
+    if (this->GetQuantity() - quantity < 0) {
         // throw Exception: item kekurangan
     }
-    this->set_quantity(this->get_quantity() - quantity);
+    this->SetQuantity(this->GetQuantity() - quantity);
 
-    if (this->get_quantity() == 0) {
-        this->set_id(0);
-        this->set_name("-");
-        this->set_type("-");
+    if (this->GetQuantity() == 0) {
+        this->SetID(0);
+        this->SetName("-");
+        this->SetType("-");
     }
 }
 
-void Item::display_info() {
+void Item::DisplayInfo() {
     // easier checking
-    cout << "id: " << get_id() << "\n";
-    cout << "Name: " << get_name() << "\n";
-    cout << "Type: " << get_type() << "\n";
-    cout << "Quantity: " << get_quantity() << "\n";
+    cout << "id: " << GetID() << "\n";
+    cout << "Name: " << GetName() << "\n";
+    cout << "Type: " << GetType() << "\n";
+    cout << "Quantity: " << GetQuantity() << "\n";
 }
 
 void Item::Use() {

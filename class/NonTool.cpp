@@ -24,17 +24,17 @@ NonTool &NonTool::operator=(const NonTool &nt) {
 }
 
 void NonTool::Stack(Item item_source, int quantity, Item item_destination) {
-    if (item_source.get_id() != item_destination.get_id()) {
+    if (item_source.GetID() != item_destination.GetID()) {
         // throw Exception: ID item beda
     } else {
-        if (item_source.get_quantity() <= quantity) {
-            int temp = quantity + item_destination.get_quantity();
+        if (item_source.GetQuantity() <= quantity) {
+            int temp = quantity + item_destination.GetQuantity();
             if (temp > 64) {
-                item_destination.set_quantity(64);
-                item_source.set_quantity(item_source.get_quantity() - quantity + temp - 64);
+                item_destination.SetQuantity(64);
+                item_source.SetQuantity(item_source.GetQuantity() - quantity + temp - 64);
             } else {
-                item_destination.set_quantity(item_destination.get_quantity() + quantity);
-                item_source.set_quantity(item_source.get_quantity() - quantity);
+                item_destination.SetQuantity(item_destination.GetQuantity() + quantity);
+                item_source.SetQuantity(item_source.GetQuantity() - quantity);
             }
         } else {
             // throw Exception:
@@ -43,11 +43,11 @@ void NonTool::Stack(Item item_source, int quantity, Item item_destination) {
     }
 }
 
-void NonTool::display_info() {
+void NonTool::DisplayInfo() {
     // easier checking
     cout << "Item: "
          << "Non Tool" << endl;
-    Item::display_info();
+    Item::DisplayInfo();
 }
 
 void NonTool::Use() {

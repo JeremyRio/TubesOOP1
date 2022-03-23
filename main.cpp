@@ -73,7 +73,7 @@ int main() {
             recipe.SetRecipeIngredient(i, line[2 + i]);
         }
         // testing
-        recipe.DisplayInfo();
+        // recipe.DisplayInfo();
         //
         recipe_map[count].push_back(recipe);
     }

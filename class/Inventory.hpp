@@ -32,13 +32,13 @@ class Inventory {
     }
 
     bool IsEmpty(int idx) {
-        return items[idx]->get_quantity() == 0;
+        return items[idx]->GetQuantity() == 0;
     }
 
     static bool IsTool(Item* item) {
         // testing
         // cout << "Type id: " << typeid(*item).name() << endl;
-        // cout << "Item Name: " << item->get_name() << endl;
+        // cout << "Item Name: " << item->GetName() << endl;
         //
         return (typeid(*item) == typeid(Tool));
     }
@@ -67,12 +67,12 @@ class Inventory {
         if (IsEmpty(idx)) {
             // throw Exception;
             // Tidak ada item dalam slot tersebut
-        } else if (item_qty > items[idx]->get_quantity()) {
+        } else if (item_qty > items[idx]->GetQuantity()) {
             // throw Exception;
             // Jumlah item yang akan dibuang melebihi jumlah item yang ada
         } else {
-            items[idx]->remove_quantity(item_qty);
-            if (items[idx]->get_quantity() == 0) {
+            items[idx]->RemoveQuantity(item_qty);
+            if (items[idx]->GetQuantity() == 0) {
                 this->size--;
                 this->Add(idx, new Item());
             }
@@ -102,35 +102,35 @@ class Inventory {
             // jumlah yang dipindahkan tidak boleh negatif
             return;
         }
-        if (quantity > items[idxSource]->get_quantity()) {
+        if (quantity > items[idxSource]->GetQuantity()) {
             // throw Exception:
             // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
             return;
         }
         if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
             ReplaceSlot(idxDest, items[idxSource]);
-            items[idxSource]->remove_quantity(quantity);
-            if (items[idxSource]->get_quantity() == 0) {
+            items[idxSource]->RemoveQuantity(quantity);
+            if (items[idxSource]->GetQuantity() == 0) {
                 this->size--;
             }
-            items[idxDest]->set_quantity(quantity);
+            items[idxDest]->SetQuantity(quantity);
             this->size++;
         } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])) {
-            if (quantity != items[idxSource]->get_quantity() && !IsTool(items[idxSource])) {
+            if (quantity != items[idxSource]->GetQuantity() && !IsTool(items[idxSource])) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
                 return;
             }
             Swap(idxSource, idxDest);
-        } else if (items[idxSource]->get_id() != items[idxDest]->get_id()) {  // Keduanya NonTool, ID beda
-            if (quantity != items[idxSource]->get_quantity()) {
+        } else if (items[idxSource]->GetID() != items[idxDest]->GetID()) {  // Keduanya NonTool, ID beda
+            if (quantity != items[idxSource]->GetQuantity()) {
                 // throw Exception:
                 // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
                 return;
             }
             Swap(idxSource, idxDest);
         } else {  // NonTool dengan ID sama
-            if (items[idxDest]->get_quantity() == 64) {
+            if (items[idxDest]->GetQuantity() == 64) {
                 return;
             }
             // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
@@ -142,16 +142,16 @@ class Inventory {
     // Melakukan stacking, dipanggil di Move
     // Kondisi awal: NonTool dengan ID yang sama
     void Stack(int idxSource, int quantity, int idxDest) {
-        if (items[idxDest]->get_quantity() + quantity > 64) {
-            int maxAmountToMove = 64 - items[idxDest]->get_quantity();
-            items[idxSource]->remove_quantity(maxAmountToMove);
-            items[idxDest]->add_quantity(maxAmountToMove);
+        if (items[idxDest]->GetQuantity() + quantity > 64) {
+            int maxAmountToMove = 64 - items[idxDest]->GetQuantity();
+            items[idxSource]->RemoveQuantity(maxAmountToMove);
+            items[idxDest]->AddQuantity(maxAmountToMove);
         } else {
-            items[idxSource]->remove_quantity(quantity);
-            if (items[idxSource]->get_quantity() == 0) {
+            items[idxSource]->RemoveQuantity(quantity);
+            if (items[idxSource]->GetQuantity() == 0) {
                 this->size--;
             }
-            items[idxDest]->add_quantity(quantity);
+            items[idxDest]->AddQuantity(quantity);
         }
     }
 
@@ -178,14 +178,14 @@ class Inventory {
     }
 
     void AddQuantity(int idx, int& remainder_qty) {
-        int total_quantity = items[idx]->get_quantity() + remainder_qty;
+        int total_quantity = items[idx]->GetQuantity() + remainder_qty;
         if (total_quantity > MAX_QTY) {
             remainder_qty = total_quantity - MAX_QTY;
             total_quantity = MAX_QTY;
         } else {
             remainder_qty = 0;
         }
-        items[idx]->set_quantity(total_quantity);
+        items[idx]->SetQuantity(total_quantity);
     }
 
     int GetEmptySlot() {
@@ -201,7 +201,7 @@ class Inventory {
 
     int FindItemNotFull(string item_name) {
         for (int i = 0; i < MAX_INVENTORY; i++) {
-            if (items[i]->get_name() == item_name && items[i]->get_quantity() < MAX_QTY && !IsEmpty(i)) {
+            if (items[i]->GetName() == item_name && items[i]->GetQuantity() < MAX_QTY && !IsEmpty(i)) {
                 return i;
             }
         }
@@ -214,7 +214,7 @@ class Inventory {
 
     void GetItemCountInCrafting(int& item_count_tool, int& item_count_nontool) {
         for (int i = 0; i < MAX_CRAFT; i++) {
-            if (items[MAX_INVENTORY + i]->get_quantity() > 0) {
+            if (items[MAX_INVENTORY + i]->GetQuantity() > 0) {
                 if (IsTool(items[MAX_INVENTORY + i])) {
                     item_count_tool++;
                 } else {
@@ -253,7 +253,7 @@ class Inventory {
         cout << endl
              << "\nCraft Slot" << endl;
         for (int i = MAX_INVENTORY; i < 36; i++) {
-            if (items[i]->get_quantity() > 0) {
+            if (items[i]->GetQuantity() > 0) {
                 cout << "C" << (i - MAX_INVENTORY) << " - ";
                 items[i]->DisplayItem();
             }
@@ -262,7 +262,7 @@ class Inventory {
         cout << endl
              << "Inventory Slot" << endl;
         for (int i = 0; i < MAX_INVENTORY; i++) {
-            if (items[i]->get_quantity() > 0) {
+            if (items[i]->GetQuantity() > 0) {
                 cout << "I" << i << " - ";
                 items[i]->DisplayItem();
             }
@@ -316,7 +316,7 @@ class Inventory {
     void Use(string inventory_id) {
         int idx = GetIdx(inventory_id);
         if (inventory_id[0] == 'I' && idx >= 0 && idx <= 27) {
-            if (IsTool(items[idx]) && items[idx]->get_quantity() > 0) {
+            if (IsTool(items[idx]) && items[idx]->GetQuantity() > 0) {
                 items[idx]->Use();
             }
         } else {
@@ -356,9 +356,9 @@ class Inventory {
                 // jika hanya terdapat item tool dalam crafting
                 int idx_tool[2];
                 GetIndexToolInCrafting(idx_tool);
-                if (items[idx_tool[0]]->get_name() == items[idx_tool[1]]->get_name()) {
+                if (items[idx_tool[0]]->GetName() == items[idx_tool[1]]->GetName()) {
                     int total_durability = min(items[idx_tool[0]]->GetDurability() + items[idx_tool[1]]->GetDurability(), 10);
-                    Give(items[idx_tool[0]]->get_name(), 1, item_map, total_durability);
+                    Give(items[idx_tool[0]]->GetName(), 1, item_map, total_durability);
                     Discard(idx_tool[0], 1);
                     Discard(idx_tool[1], 1);
                 }
@@ -372,7 +372,7 @@ class Inventory {
         int idx = 0;
         for (int i = 0; i < MAX_CRAFT; i++) {
             int idx_crafting = i + MAX_INVENTORY;
-            if (items[idx_crafting]->get_quantity() > 0) {
+            if (items[idx_crafting]->GetQuantity() > 0) {
                 idx_tool[idx++] = idx_crafting;
             }
         }
@@ -412,7 +412,7 @@ class Inventory {
             for (int l = 0; l < recipe_col; l++) {
                 int crafting_slot = CRAFTING_SLOT(i, j, k, l);
                 int recipe_slot = k * recipe_col + recipe_col - l - 1;
-                if (items[crafting_slot]->get_name() != recipe[recipe_slot] && items[crafting_slot]->get_type() != recipe[recipe_slot]) {
+                if (items[crafting_slot]->GetName() != recipe[recipe_slot] && items[crafting_slot]->GetType() != recipe[recipe_slot]) {
                     return false;
                 }
             }
@@ -430,7 +430,7 @@ class Inventory {
                 // cout << "crafting_slot: I" << crafting_slot << endl;
                 // cout << "recipe_slot: " << recipe_slot << endl;
                 //
-                if (items[crafting_slot]->get_name() != recipe[recipe_slot] && items[crafting_slot]->get_type() != recipe[recipe_slot]) {
+                if (items[crafting_slot]->GetName() != recipe[recipe_slot] && items[crafting_slot]->GetType() != recipe[recipe_slot]) {
                     return false;
                 }
             }
