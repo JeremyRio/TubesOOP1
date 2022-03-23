@@ -44,6 +44,8 @@ class Inventory {
     // Swap isi dari 2 tempat di inventory/crafting table
     void Swap(int idxSource, int idxDest);
 
+    bool ValidIndex(int idx);
+
     // Memindahkan suatu item dari suatu tempat ke tempat lain
     void Move(int idxSource, int quantity, int idxDest);
 

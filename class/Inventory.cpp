@@ -83,12 +83,21 @@ void Inventory::Swap(int idxSource, int idxDest) {
     delete temp;
 }
 
+bool Inventory::ValidIndex(int idx){
+    return (idx >= 0 && idx <= 35);
+}
+
 // Memindahkan suatu item dari suatu tempat ke tempat lain
 void Inventory::Move(int idxSource, int quantity, int idxDest) {
-    if (quantity == 0) {
+    if (!ValidIndex(idxSource) || !ValidIndex(idxDest)){
+        // throw Exception:
+        // invalid index
         return;
     }
-    // Tidak ada yang berubah, jumlah item yang dipindahkan sebanyak 0
+    if (quantity == 0) {
+        // Tidak ada yang berubah, jumlah item yang dipindahkan sebanyak 0
+        return;
+    }
     if (quantity < 0) {
         // throw Exception:
         // jumlah yang dipindahkan tidak boleh negatif
@@ -131,9 +140,9 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         Swap(idxSource, idxDest);
     } else {  // NonTool dengan ID sama
         if (items[idxDest]->GetQuantity() == 64) {
+            // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
             return;
         }
-        // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
         // Stacking
         Stack(idxSource, quantity, idxDest);
     }
@@ -394,7 +403,7 @@ bool Inventory::SubMatrix(int recipe_row, int recipe_col, Recipes recipe, map<st
                 for (int k = 0; k < recipe_row; k++) {
                     for (int l = 0; l < recipe_col; l++) {
                         int crafting_slot = CRAFTING_SLOT(i, j, k, l);
-                        Discard(crafting_slot, 1);
+                        if (!IsEmpty(crafting_slot)) Discard(crafting_slot, 1);
                     }
                 }
                 int craft_quantity = recipe.GetCraftQuantity();

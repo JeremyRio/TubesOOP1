@@ -41,7 +41,14 @@ void move(string slot_src, int slot_qty, string slot_dest) {
             if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
             idxDest = (int)tempDest[1] - 48;
             if (tempDest[0] == 'C') idxDest += 27;
-            if (tempDest.length() > 2) idxDest = idxDest * 10 + (int)tempDest[2] - 48;
+            if (tempDest.length() > 2) { // Inventory I
+                idxDest = idxDest * 10 + (int)tempDest[2] - 48;
+                if (idxDest > 26){
+                    // throw exception:
+                    // invalid index
+                    return;
+                }
+            }
             if (remainder > 0) {
                 inventory.Move(idxSrc, amountPerStack + 1, idxDest);
                 remainder--;
