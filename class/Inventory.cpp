@@ -91,10 +91,13 @@ bool Inventory::ValidIndex(int idx){
 void Inventory::Move(int idxSource, int quantity, int idxDest) {
     if (!ValidIndex(idxSource) || !ValidIndex(idxDest)){
         // throw Exception:
-        // invalid index
+        // index out of bounds
+        BaseException *e = new IndexOutOfBoundsException;
+        throw e;
         return;
     }
     if (quantity == 0) {
+        // DO NOTHING
         // Tidak ada yang berubah, jumlah item yang dipindahkan sebanyak 0
         return;
     }
@@ -140,6 +143,7 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         Swap(idxSource, idxDest);
     } else {  // NonTool dengan ID sama
         if (items[idxDest]->GetQuantity() == 64) {
+            // DO NOTHING
             // Tidak ada yang berubah, item tidak dapat di stack jika item pada destination sudah penuh
             return;
         }

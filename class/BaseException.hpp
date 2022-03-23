@@ -10,6 +10,15 @@ class BaseException {
     virtual void printMessage() = 0;
 };
 
+class IndexOutOfBoundsException : public BaseException {
+    public:
+    IndexOutOfBoundsException() {
+    }
+    void printMessage() {
+        cout << "One or more index given is out of bounds" << endl;
+    }
+};
+
 class InvalidNumberException : public BaseException {
     private:
     int number;

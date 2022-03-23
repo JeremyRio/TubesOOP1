@@ -24,7 +24,7 @@ Inventory inventory;
 
 void move(string slot_src, int slot_qty, string slot_dest) {
     int idxSrc = (int)slot_src[1] - 48;
-    if (slot_src[0] == 'C') idxSrc += 27;
+    if (slot_src[0] == 'C') idxSrc += MAX_INVENTORY;
     if (slot_src.length() > 2) idxSrc = idxSrc * 10 + (int)slot_src[2] - 48;
     int idxDest;
     string tempDest = "";
@@ -40,13 +40,14 @@ void move(string slot_src, int slot_qty, string slot_dest) {
         if (slot_dest[i] == ' ' || i == slot_dest.length() - 1) {
             if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
             idxDest = (int)tempDest[1] - 48;
-            if (tempDest[0] == 'C') idxDest += 27;
+            if (tempDest[0] == 'C') idxDest += MAX_INVENTORY;
             if (tempDest.length() > 2) { // Inventory I
                 idxDest = idxDest * 10 + (int)tempDest[2] - 48;
                 if (idxDest > 26){
                     // throw exception:
                     // invalid index
-                    return;
+                    BaseException *e = new IndexOutOfBoundsException;
+                    throw e;
                 }
             }
             if (remainder > 0) {

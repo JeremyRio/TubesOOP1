@@ -14,17 +14,6 @@
 #define CRAFTING_SLOT(i, j, k, l) (i * CRAFT_BOUNDARY + j + MAX_INVENTORY + k * CRAFT_BOUNDARY + l)
 #define CRAFTING_INDEX(i) (MAX_INVENTORY + i)
 
-class CustomException : public BaseException {
-private:
-    string message;
-public:
-    CustomException(string message) {
-        this->message = message;
-    }
-    void printMessage() {
-        cout << message << endl;
-    }
-};
 
 class Inventory {
     private:
