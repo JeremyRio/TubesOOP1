@@ -60,9 +60,9 @@ void command_input() {
     cout << "COMMAND >>> ";
     cin >> command;
     if (command == "EXPORT") {
-        string output_path;
-        cin >> output_path;
-        ofstream output_file(output_path);
+        string export_file_name;
+        cin >> export_file_name;
+        inventory.Exporting(export_file_name);
     } else if (command == "CRAFT") {
         inventory.Crafting(recipe_map, item_map);
     } else if (command == "GIVE") {

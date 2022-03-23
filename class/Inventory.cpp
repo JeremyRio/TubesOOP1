@@ -1,8 +1,10 @@
 #include "Inventory.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <vector>
+#include <string>
 
 Inventory::Inventory() {
     size = 0;
@@ -439,4 +441,28 @@ bool Inventory::MatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipe
         }
     }
     return true;
+}
+
+void Inventory::Exporting(string file_name) {
+    string full = "";
+    string path = "exports/"  + file_name;
+    string convert1,convert2;
+    int temp1,temp2;
+    for (int i = 0; i < MAX_INVENTORY; i++){
+        temp1 = items[i]->GetID();
+        if (IsTool(items[i])){
+            temp2 = items[i]->GetDurability();
+        }
+        else {
+            temp2 = items[i]->GetQuantity();
+        }   
+        convert1 = to_string(temp1);
+        convert2 = to_string(temp2);
+        full += convert1 + ":" + convert2 + "\n";
+        cout << i<< endl;
+    }
+    cout << full;
+    ofstream MyFile(path);
+    MyFile << full;
+    MyFile.close();
 }

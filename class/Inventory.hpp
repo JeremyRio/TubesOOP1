@@ -74,4 +74,6 @@ class Inventory {
     bool SubMatrix(int recipe_row, int recipe_col, Recipes recipe, map<string, Item*>& item_map);
     bool InverseMatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipes recipe);
     bool MatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipes recipe);
+
+    void Exporting(string file_name);
 };
