@@ -5,44 +5,75 @@
 using namespace std;
 
 class BaseException {
-public:
+    public:
     // menuliskan pesan kesalahan ke stdout
     virtual void printMessage() = 0;
 };
 
 class InvalidNumberException : public BaseException {
-private:
+    private:
     int number;
-public:
+
+    public:
     InvalidNumberException(int number) {
         this->number = number;
     }
     void printMessage() {
-        cout << "Angka " << number << " tidak valid" << endl;
+        cout << "Number " << number << " is not valid" << endl;
     }
 };
 
 class InvalidItemException : public BaseException {
-private:
+    private:
     string item;
-public:
+
+    public:
     InvalidItemException(string item) {
         this->item = item;
     }
     void printMessage() {
-        cout << "Item bernama " << item << " tidak ada" << endl;
+        cout << "Item " << item << " doesn't exist" << endl;
     }
 };
 
 class InvalidCommandException : public BaseException {
-private:
+    private:
     string cmd;
-public:
+
+    public:
     InvalidCommandException(string cmd) {
         this->cmd = cmd;
     }
     void printMessage() {
-        cout << "Command " << cmd << " tidak ada" << endl;
+        cout << "Command " << cmd << " doesn't exist" << endl;
+    }
+};
+
+class InvalidIDException : public BaseException {
+    private:
+    string id;
+
+    public:
+    InvalidIDException(string id) {
+        this->id = id;
+    }
+    void printMessage() {
+        cout << "ID " << id << " doesn't exist" << endl;
+    }
+};
+
+class InventoryFullException : public BaseException {
+    private:
+    int quantity;
+    string item_name;
+
+    public:
+    InventoryFullException(string item_name, int quantity) {
+        this->quantity = quantity;
+        this->item_name = item_name;
+    }
+    void printMessage() {
+        printf("Iventory is full, %d %s is thrown\n", quantity, item_name);
     }
 };
 

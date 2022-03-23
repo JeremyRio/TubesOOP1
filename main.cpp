@@ -78,10 +78,9 @@ int main() {
         recipe_map[count].push_back(recipe);
     }
 
-    // sample interaction
     string command;
     Inventory inventory;
-
+    
     while (true) {
         cout << "\nInventory:\n";
         inventory.Show();

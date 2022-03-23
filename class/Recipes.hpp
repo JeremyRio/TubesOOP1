@@ -10,7 +10,6 @@ class Recipes {
     int col;
     int craft_quantity;
     string name;
-    bool is_type;
 
     public:
     // ctor default
@@ -32,7 +31,7 @@ class Recipes {
     string GetName() const;
     void SetRecipeIngredient(int idx, string ingredient);
     void DisplayInfo();
-    string& operator[](int idx);
+    string& operator[](int idx) const;
 };
 
 #endif
