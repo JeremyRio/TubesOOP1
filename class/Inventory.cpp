@@ -41,12 +41,12 @@ void Inventory::ReplaceSlot(int idx, Item* item) {
 
 void Inventory::Add(int idx, Item* item) {
     ReplaceSlot(idx, item);
-    this->size++;
+    if (idx < MAX_INVENTORY) this->size++;
 }
 
 void Inventory::Add(int idx, Item* item, int durability) {
     ReplaceSlot(idx, item);
-    this->size++;
+    if (idx < MAX_INVENTORY) this->size++;
     items[idx]->SetDurability(durability);
 }
 
@@ -63,7 +63,7 @@ void Inventory::Discard(int idx, int item_qty) {
         throw e;
     } else {
         items[idx]->RemoveQuantity(item_qty);
-        if (items[idx]->GetQuantity() == 0) {
+        if (items[idx]->GetQuantity() == 0 && idx < MAX_INVENTORY) {
             this->size--;
             this->Add(idx, new Item());
         }
@@ -118,11 +118,11 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
     if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
         ReplaceSlot(idxDest, items[idxSource]);
         items[idxSource]->RemoveQuantity(quantity);
-        if (items[idxSource]->GetQuantity() == 0) {
+        if (items[idxSource]->GetQuantity() == 0 && idxSource < MAX_INVENTORY) {
             this->size--;
         }
         items[idxDest]->SetQuantity(quantity);
-        this->size++;
+        if (idxDest < MAX_INVENTORY) this->size++;
     } else if (IsTool(items[idxSource]) || IsTool(items[idxDest])) {
         if (quantity != items[idxSource]->GetQuantity() && !IsTool(items[idxSource])) {
             // throw Exception:
@@ -161,7 +161,7 @@ void Inventory::Stack(int idxSource, int quantity, int idxDest) {
         items[idxDest]->AddQuantity(maxAmountToMove);
     } else {
         items[idxSource]->RemoveQuantity(quantity);
-        if (items[idxSource]->GetQuantity() == 0) {
+        if (items[idxSource]->GetQuantity() == 0 && idxSource < MAX_INVENTORY) {
             this->size--;
         }
         items[idxDest]->AddQuantity(quantity);
