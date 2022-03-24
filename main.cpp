@@ -88,9 +88,9 @@ void command_input() {
         string slot_dest;
         cin >> slot_src >> slot_qty;
         if (slot_qty == 0){
-            std::cin.ignore();
             std::cin.clear();
-            BaseException *e = new InvalidNumberException(slot_qty);
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            BaseException *e = new CustomException("Invalid arguments");
             throw e;
         }
         getline(cin, slot_dest);
