@@ -86,8 +86,13 @@ void command_input() {
         string slot_src;
         int slot_qty;
         string slot_dest;
-        // still need to handle multiple destinations
         cin >> slot_src >> slot_qty;
+        if (slot_qty == 0){
+            std::cin.ignore();
+            std::cin.clear();
+            BaseException *e = new InvalidNumberException(slot_qty);
+            throw e;
+        }
         getline(cin, slot_dest);
         move(slot_src, slot_qty, slot_dest);
     } else if (command == "USE") {
