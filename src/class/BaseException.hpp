@@ -30,7 +30,7 @@ class InvalidNumberException : public BaseException {
         this->number = number;
     }
     void printMessage() {
-        cout << "Number " << number << " is not valid" << endl;
+        cout << "Number " << number << " is not valid, specify quantity larger than 0" << endl;
     }
 };
 
