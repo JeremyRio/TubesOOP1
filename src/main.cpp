@@ -1,6 +1,7 @@
 // sample main file, replace this with your own code
 
 #include <algorithm>
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -185,7 +186,6 @@ int main() {
         string line[13];
         int i = 0;
         for (string recipe_lines; getline(recipe_config_file, recipe_lines);) {
-            // Traverse the string
             for (auto &ch : recipe_lines) {
                 if (ch != ' ') {
                     temp += ch;
@@ -208,9 +208,6 @@ int main() {
             }
             recipe.SetRecipeIngredient(i, line[2 + i]);
         }
-        // testing
-        // recipe.DisplayInfo();
-        //
         recipe_map[count].push_back(recipe);
     }
 
@@ -220,7 +217,7 @@ int main() {
     cout << "       SIMULATION        " << endl;
     cout << "=========================" << endl;
     cout << endl;
-    cout << "ENTER COMMAND: ";
+    cout << "COMMAND: ";
     while (cin >> command) {
         CommandFailedException exception;
         try {
@@ -232,11 +229,6 @@ int main() {
             exception.addException(e);
             exception.printMessage();
         }
-        // if (exception.getIdx() == 0) {
-        //     cout << "\nInventory:\n";
-        //     inventory.Show();
-        //     cout << endl;
-        // }
         cout << "\nENTER COMMAND: ";
     }
     return 0;

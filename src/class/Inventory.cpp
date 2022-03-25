@@ -78,6 +78,7 @@ void Inventory::Swap(int idxSource, int idxDest) {
     } else {
         temp = new NonTool(*(NonTool*)items[idxDest]);
     }
+    cout << "Swap items of " << items[idxSource]->GetName() << " with " << items[idxDest]->GetName() << endl;
     ReplaceSlot(idxDest, items[idxSource]);
     ReplaceSlot(idxSource, temp);
     delete temp;
@@ -94,7 +95,6 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         // index out of bounds
         BaseException* e = new IndexOutOfBoundsException;
         throw e;
-        return;
     }
     if (quantity == 0) {
         // DO NOTHING
@@ -106,14 +106,12 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         // jumlah yang dipindahkan tidak boleh negatif
         BaseException* e = new InvalidNumberException(quantity);
         throw e;
-        return;
     }
     if (quantity > items[idxSource]->GetQuantity()) {
         // throw Exception:
         // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
-        BaseException* e = new CustomException("The selected item is out of stock");
+        BaseException* e = new CustomException("The selected item cannot be moved because the quantity is not enough");
         throw e;
-        return;
     }
     if (IsEmptySlot(idxDest)) {  // Jika slot kosong, isi item
         ReplaceSlot(idxDest, items[idxSource]);
@@ -127,9 +125,8 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         if (quantity != items[idxSource]->GetQuantity() && !IsTool(items[idxSource])) {
             // throw Exception:
             // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
-            BaseException* e = new CustomException("Item cannot be moved to different item");
+            BaseException* e = new CustomException("The selected item cannot be moved to different item");
             throw e;
-            return;
         }
         Swap(idxSource, idxDest);
     } else if (items[idxSource]->GetID() != items[idxDest]->GetID()) {  // Keduanya NonTool, ID beda
@@ -138,7 +135,6 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
             // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
             BaseException* e = new CustomException("Item cannot be moved to different item");
             throw e;
-            return;
         }
         Swap(idxSource, idxDest);
     } else {  // NonTool dengan ID sama
