@@ -30,19 +30,33 @@ void move(string slot_src, int slot_qty, string slot_dest) {
     for (int i = 1; i < slot_dest.length(); i++) {
         if (slot_dest[i] == ' ') count++;
     }
+    if (count > slot_qty){
+        BaseException *e = new CustomException("Not enough items");
+        throw e;
+    }
     int amountPerStack = slot_qty / count;
     int remainder = slot_qty % count;
     // Membagi berdasarkan jumlah slot
     for (int i = 1; i < slot_dest.length(); i++) {
         if (slot_dest[i] == ' ' || i == slot_dest.length() - 1) {
             if (i == slot_dest.length() - 1) tempDest += slot_dest[i];
+            if (tempDest.length() > 3 || (tempDest[0] != 'I' && tempDest[0] != 'C')){
+                BaseException *e = new CustomException("Invalid arguments");
+                throw e;
+            }
             idxDest = (int)tempDest[1] - 48;
+            if (idxDest < 0 || idxDest > 9){
+                BaseException *e = new CustomException("Invalid arguments");
+                throw e;
+            }
             if (tempDest[0] == 'C') idxDest += MAX_INVENTORY;
-            if (tempDest.length() > 2) {  // Inventory I
+            if (tempDest.length() == 3) {  // Inventory I
                 idxDest = idxDest * 10 + (int)tempDest[2] - 48;
-                if (idxDest > 26) {
-                    // throw exception:
-                    // invalid index
+                if ((int)tempDest[2]-48 < 0 || (int)tempDest[2]-48 > 9){
+                    BaseException *e = new CustomException("Invalid arguments");
+                    throw e;
+                }
+                if (idxDest > 26 || idxDest < 0) {
                     BaseException *e = new IndexOutOfBoundsException;
                     throw e;
                 }
@@ -54,7 +68,6 @@ void move(string slot_src, int slot_qty, string slot_dest) {
                 inventory.Move(idxSrc, amountPerStack, idxDest);
             }
             tempDest = "";
-            ;
         } else {
             tempDest += slot_dest[i];
         }
@@ -110,7 +123,7 @@ void command_input(string command) {
         string slot_dest;
         cin >> slot_src >> slot_qty;
         if (slot_qty == 0) {
-            BaseException *e = new CustomException("Invalid arguments");
+            BaseException *e = new CustomException("Specify quantity larger than 0");
             throw e;
         }
         int idx = inventory.GetIdx(slot_src);
