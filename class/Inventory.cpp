@@ -243,6 +243,7 @@ void Inventory::GetItemCountInCrafting(int& item_count_tool, int& item_count_non
 
 void Inventory::Display() {
     // Displaying Craft Table
+    cout << endl;
     cout << "   CRAFTING" << endl;
     for (int i = MAX_INVENTORY; i < 36; i++) {
         cout << "[C " << (i - 27) << "]";
@@ -293,37 +294,36 @@ void Inventory::Give(string item_name, int item_qty, map<string, Item*>& item_ma
     if (item_map.find(item_name) != item_map.end()) {
         int idx_item;
         while (item_qty > 0) {
-            if (IsFullInventory()) {
-                // throw Exception:
-                // inventory sudah full, item terbuang: {item_qty}
-                BaseException* e = new InventoryFullException(item_name, item_qty);
-                throw e;
+            // Jika item berupa tool
+            if (IsTool(item_map[item_name])) {
+                idx_item = GetEmptySlot();
+                if (idx_item != -1) {
+                    if (durability == 10) {
+                        Add(idx_item, item_map[item_name]);
+                    } else {
+                        Add(idx_item, item_map[item_name], durability);
+                    }
+                    item_qty--;
+                } else {
+                    BaseException* e = new InventoryFullException(item_name, item_qty);
+                    throw e;
+                }
             } else {
-                // Jika item berupa tool
-                if (IsTool(item_map[item_name])) {
+                // Jika item berupa nontool
+                idx_item = FindItemNotFull(item_name);
+                if (idx_item == -1) {
                     idx_item = GetEmptySlot();
                     if (idx_item != -1) {
-                        if (durability == 10) {
-                            Add(idx_item, item_map[item_name]);
-                        } else {
-                            Add(idx_item, item_map[item_name], durability);
-                        }
-                        item_qty--;
+                        // item not found, add empty slot
+                        Add(idx_item, item_map[item_name]);
+                        AddQuantity(idx_item, item_qty);
+                    } else {
+                        BaseException* e = new InventoryFullException(item_name, item_qty);
+                        throw e;
                     }
                 } else {
-                    // Jika item berupa nontool
-                    idx_item = FindItemNotFull(item_name);
-                    if (idx_item == -1) {
-                        idx_item = GetEmptySlot();
-                        if (idx_item != -1) {
-                            // item not found, add empty slot
-                            Add(idx_item, item_map[item_name]);
-                            AddQuantity(idx_item, item_qty);
-                        }
-                    } else {
-                        // item found
-                        AddQuantity(idx_item, item_qty);
-                    }
+                    // item found
+                    AddQuantity(idx_item, item_qty);
                 }
             }
         }

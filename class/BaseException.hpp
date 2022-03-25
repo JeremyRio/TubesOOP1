@@ -82,7 +82,7 @@ class InventoryFullException : public BaseException {
         this->item_name = item_name;
     }
     void printMessage() {
-        cout << "Inventory is full " << quantity << " " << item_name << " is thrown\n"
+        cout << "Inventory is full, " << quantity << " " << item_name << " is thrown"
              << endl;
     }
 };
