@@ -483,7 +483,7 @@ bool Inventory::MatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipe
 
 void Inventory::Exporting(string file_name) {
     string full = "";
-    string path = "exports/" + file_name;
+    string path = "tests/" + file_name;
     string convert1, convert2;
     int temp1, temp2;
     for (int i = 0; i < MAX_INVENTORY; i++) {

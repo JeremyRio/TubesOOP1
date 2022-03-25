@@ -16,7 +16,7 @@ int main() {
         if (filename.size() >= 3 && filename.substr(filename.size() - 3) == "ans") {
             total++;
             ifstream answerFile(entry.path());
-            ifstream outputFile("./exports/" + entry.path().stem().string() + ".out");
+            ifstream outputFile("./tests/" + entry.path().stem().string() + ".out");
             string answer, output;
             bool same = true;
             while (getline(answerFile, answer) && getline(outputFile, output)) {

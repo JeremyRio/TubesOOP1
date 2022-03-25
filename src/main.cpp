@@ -12,10 +12,11 @@
 using namespace std;
 
 static map<string, Item *> item_map;
+static map<int, vector<Recipes>> recipe_map;
+
 string config_path = "./config";
 string item_config_path = config_path + "/item.txt";
 string recipe_config_path = config_path + "/recipe";
-static map<int, vector<Recipes>> recipe_map;
 string command;
 Inventory inventory;
 
