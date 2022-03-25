@@ -1,7 +1,9 @@
 #ifndef __BASE_EXCEPTION_HPP__
 #define __BASE_EXCEPTION_HPP__
 
+#include <filesystem>
 #include <iostream>
+
 using namespace std;
 
 class BaseException {
@@ -121,7 +123,10 @@ class CommandFailedException {
         }
     }
     void printMessage() {
-        cout << "Error Command with details:" << endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cout << "[ERROR COMMAND]" << endl;
+        cout << "details: ";
         for (int i = 0; i < idx; i++) {
             exc[i]->printMessage();
         }

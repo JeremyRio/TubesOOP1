@@ -59,7 +59,7 @@ void Inventory::Discard(int idx, int item_qty) {
     } else if (item_qty > items[idx]->GetQuantity()) {
         // throw Exception;
         // Jumlah item yang akan dibuang melebihi jumlah item yang ada
-        BaseException* e = new CustomException("The selected item is out of stock");
+        BaseException* e = new CustomException("The selected item doesn't have enough quantity");
         throw e;
     } else {
         items[idx]->RemoveQuantity(item_qty);
@@ -219,10 +219,6 @@ int Inventory::FindItemNotFull(string item_name) {
 
 bool Inventory::IsFullInventory() {
     return this->size == MAX_INVENTORY;
-}
-
-bool Inventory::IsEmptyInventory() {
-    return this->size == 0;
 }
 
 void Inventory::GetItemCountInCrafting(int& item_count_tool, int& item_count_nontool) {

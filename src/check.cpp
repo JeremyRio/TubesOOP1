@@ -1,4 +1,3 @@
-// checker file
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -8,7 +7,10 @@ using namespace std;
 
 int main() {
     int correct = 0, total = 0;
-
+    cout << endl;
+    cout << "=======================" << endl;
+    cout << "     UNIT TESTING" << endl;
+    cout << "=======================" << endl;
     for (const auto &entry : filesystem::directory_iterator("./tests")) {
         string filename = entry.path().filename().string();
         if (filename.size() >= 3 && filename.substr(filename.size() - 3) == "ans") {

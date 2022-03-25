@@ -1,12 +1,7 @@
-// sample main file, replace this with your own code
-
 #include <algorithm>
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <map>
-#include <string>
 
 #include "class/BaseException.hpp"
 #include "class/Inventory.hpp"
@@ -80,8 +75,6 @@ void command_input(string command) {
         int item_qty;
         cin >> item_name >> item_qty;
         if (item_qty < 1) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             BaseException *e = new CustomException("Invalid arguments");
             throw e;
         } else {
@@ -93,8 +86,6 @@ void command_input(string command) {
         int item_qty;
         cin >> item_id >> item_qty;
         if (isdigit(item_id[0]) || item_qty == 0) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             BaseException *e = new CustomException("Invalid arguments");
             throw e;
         }
@@ -119,13 +110,11 @@ void command_input(string command) {
         string slot_dest;
         cin >> slot_src >> slot_qty;
         if (slot_qty == 0) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             BaseException *e = new CustomException("Invalid arguments");
             throw e;
         }
         int idx = inventory.GetIdx(slot_src);
-        if ((slot_src[0] == 'C' && idx < MAX_CRAFT || slot_src[0] == 'I' && idx < MAX_INVENTORY) && idx > -1) {
+        if ((slot_src[0] == 'C' && idx < MAX_CRAFT || slot_src[0] == 'I' && idx < MAX_INVENTORY) && idx > -1 && slot_qty > 0) {
             getline(cin, slot_dest);
             move(slot_src, slot_qty, slot_dest);
             cout << "Item moved successully" << endl;
@@ -133,8 +122,6 @@ void command_input(string command) {
             BaseException *e = new InvalidNumberException(slot_qty);
             throw e;
         } else {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             BaseException *e = new InvalidIDException(slot_src);
             throw e;
         }
@@ -217,7 +204,10 @@ int main() {
     cout << "       SIMULATION        " << endl;
     cout << "=========================" << endl;
     cout << endl;
-    cout << "COMMAND: ";
+    cout << "ENTER COMMAND: ";
+
+    CustomException err("Invalid arguments");
+
     while (cin >> command) {
         CommandFailedException exception;
         try {
@@ -228,6 +218,8 @@ int main() {
         } catch (CommandFailedException e) {
             exception.addException(e);
             exception.printMessage();
+        } catch (...) {
+            err.printMessage();
         }
         cout << "\nENTER COMMAND: ";
     }
