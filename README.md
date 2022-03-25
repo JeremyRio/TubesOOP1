@@ -22,8 +22,8 @@ Perlu menginstall MinGW untuk windows jika ingin menjalankan program, jika mengg
 sudo apt-get install make g++
 ```
 
-Pastikan direktori terminal menuju `TubesOOP1`
-Untuk menjalankan program, masukkan:
+### Langkah Menjalankan Program
+Pastikan direktori terminal menuju `TubesOOP1`. Untuk menjalankan program, masukkan:
 ```
 make run
 ```
