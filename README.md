@@ -40,7 +40,7 @@ make all
 ```
 
 # Penulis
-- 13520025 / Fransiskus Davin Anwari <br\>
+- 13520025 / Fransiskus Davin Anwari
 - 13520082  / Jeremy Rionaldo Pasaribu
 - 13520097 / Angelica Winasta Sinisuka
 - 13520106 / Roby Purnomo
