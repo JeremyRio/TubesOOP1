@@ -52,7 +52,10 @@ void Tool::DisplayInfo() {
 void Tool::Use() {
     durability--;
     if (durability == 0) {
-        quantity = 0;
+        cout << name << " breaks" << endl;
+        RemoveQuantity(1);
+    } else {
+        cout << name << " is used, remaining durability: " << durability << endl;
     }
 }
 

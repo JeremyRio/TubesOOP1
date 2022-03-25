@@ -79,7 +79,9 @@ void command_input(string command) {
         int item_qty;
         cin >> item_name >> item_qty;
         if (item_qty < 1) {
-            BaseException *e = new InvalidNumberException(item_qty);
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            BaseException *e = new CustomException("Invalid arguments");
             throw e;
         } else {
             inventory.Give(item_name, item_qty, item_map);
@@ -101,6 +103,8 @@ void command_input(string command) {
                 idx += MAX_INVENTORY;
             }
             inventory.Discard(idx, item_qty);
+            cout << item_qty << " item from "
+                 << "slot " << item_id << " successfully discarded" << endl;
         } else if (item_qty < 0) {
             BaseException *e = new InvalidNumberException(item_qty);
             throw e;
@@ -123,6 +127,7 @@ void command_input(string command) {
         if ((slot_src[0] == 'C' && idx < MAX_CRAFT || slot_src[0] == 'I' && idx < MAX_INVENTORY) && idx > -1) {
             getline(cin, slot_dest);
             move(slot_src, slot_qty, slot_dest);
+            cout << "Item moved successully" << endl;
         } else if (slot_qty < 0) {
             BaseException *e = new InvalidNumberException(slot_qty);
             throw e;
@@ -222,11 +227,9 @@ int main() {
             command_input(command);
         } catch (BaseException *e) {
             exception.addException(e);
-            cout << endl;
             exception.printMessage();
         } catch (CommandFailedException e) {
             exception.addException(e);
-            cout << endl;
             exception.printMessage();
         }
         // if (exception.getIdx() == 0) {

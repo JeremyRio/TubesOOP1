@@ -5,9 +5,13 @@ EXT_ANS = ans
 EXECUTABLE_FILENAME = main
 ALL_SRCS := $(wildcard src/class/*.cpp)
 
+# Compile then run main.exe
+run: compile
+	./bin/$(EXECUTABLE_FILENAME)
+
 all: compile test check
 
-# Compile all cpp files except check.cpp
+# Compile cpp files
 compile:
 	g++ -std=c++17 -o ./bin/$(EXECUTABLE_FILENAME) ./src/main.cpp $(ALL_SRCS)
 
@@ -18,8 +22,6 @@ test: $(TC_FOLDER)/*.$(EXT_IN) ./bin/$(EXECUTABLE_FILENAME)
 	done;
 
 # Check
-check: FORCE ./src/check.cpp
+check:
 	g++ -std=c++17 -o ./bin/check ./src/check.cpp
 	./bin/check
-
-FORCE: ;

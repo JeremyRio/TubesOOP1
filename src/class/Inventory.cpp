@@ -356,6 +356,9 @@ void Inventory::Crafting(map<int, vector<Recipes>> recipe_map, map<string, Item*
     bool is_crafting = true;
     int item_count_tool = 0;
     int item_count_nontool = 0;
+    int amount_crafted = 0;
+    bool is_nontool_crafting = false;
+    string recipe_name;
     GetItemCountInCrafting(item_count_tool, item_count_nontool);
 
     // testing
@@ -363,35 +366,55 @@ void Inventory::Crafting(map<int, vector<Recipes>> recipe_map, map<string, Item*
     // cout << "item_count_nontool: " << item_count_nontool << endl;
     //
 
-    // jika slot tidak valid dimana terdapat campuran antara tool dan non tool di slot crafting
-    while (is_crafting) {
-        is_crafting = false;
-        if (item_count_nontool > 0 && item_count_tool == 0 && recipe_map.find(item_count_nontool) != recipe_map.end()) {
-            // jika hanya terdapat item nontool dalam crafting
-            for (auto& recipe : recipe_map[item_count_nontool]) {
-                int i, j;
-                int recipe_row = recipe.GetRow();
-                int recipe_col = recipe.GetCol();
+    if (item_count_nontool > 0 && item_count_tool == 0 && recipe_map.find(item_count_nontool) != recipe_map.end()) {
+        is_nontool_crafting = true;
+        // jika hanya terdapat item nontool dalam crafting
+        for (auto& recipe : recipe_map[item_count_nontool]) {
+            int i, j;
+            int recipe_row = recipe.GetRow();
+            int recipe_col = recipe.GetCol();
+            recipe_name = recipe.GetName();
+            is_crafting = SubMatrix(recipe_row, recipe_col, recipe, item_map);
+            while (is_crafting) {
+                amount_crafted += recipe.GetCraftQuantity();
                 is_crafting = SubMatrix(recipe_row, recipe_col, recipe, item_map);
-                if (is_crafting) {
-                    break;
-                }
-                // testing
-                // cout << "Recipe: " << recipe.GetName() << endl;
             }
-        } else if (item_count_tool == 2 && item_count_nontool == 0) {
-            // jika hanya terdapat item tool dalam crafting
-            int idx_tool[2];
-            GetIndexToolInCrafting(idx_tool);
-            if (items[idx_tool[0]]->GetName() == items[idx_tool[1]]->GetName()) {
-                int total_durability = min(items[idx_tool[0]]->GetDurability() + items[idx_tool[1]]->GetDurability(), 10);
-                Give(items[idx_tool[0]]->GetName(), 1, item_map, total_durability);
-                Discard(idx_tool[0], 1);
-                Discard(idx_tool[1], 1);
+            if (amount_crafted > 0) {
+                break;
             }
-        } else {
-            // jika crafting tidak valid yaitu terdapat campuran antara tool dan non tool di slot crafting atau tidak memenuhi kondisi di atas
         }
+    } else if (item_count_tool == 2 && item_count_nontool == 0) {
+        // jika hanya terdapat item tool dalam crafting
+        int idx_tool[2];
+        bool tool_combined = false;
+        string name;
+        int total_durability;
+        GetIndexToolInCrafting(idx_tool);
+        if (items[idx_tool[0]]->GetName() == items[idx_tool[1]]->GetName()) {
+            total_durability = min(items[idx_tool[0]]->GetDurability() + items[idx_tool[1]]->GetDurability(), 10);
+            Give(items[idx_tool[0]]->GetName(), 1, item_map, total_durability);
+            tool_combined = true;
+            name = items[idx_tool[0]]->GetName();
+            Discard(idx_tool[0], 1);
+            Discard(idx_tool[1], 1);
+        }
+        if (!tool_combined) {
+            BaseException* e = new CustomException("Tools cannot be combined");
+            throw e;
+        } else {
+            cout << "Successfully combined 2 " << name << ", total durability: " << total_durability << endl;
+        }
+    } else {
+        // jika crafting tidak valid yaitu terdapat campuran antara tool dan non tool di slot crafting atau tidak memenuhi kondisi di atas
+        BaseException* e = new CustomException("Crafting is not valid");
+        throw e;
+    }
+
+    if (amount_crafted > 0) {
+        cout << "Successfully crafted " << amount_crafted << " " << recipe_name << endl;
+    } else if (is_nontool_crafting) {
+        BaseException* e = new CustomException("Crafting failed, no recipes matched the crafting pattern");
+        throw e;
     }
 }
 
@@ -484,4 +507,5 @@ void Inventory::Exporting(string file_name) {
     ofstream MyFile(path);
     MyFile << full;
     MyFile.close();
+    cout << file_name << " successfully exported" << endl;
 }
