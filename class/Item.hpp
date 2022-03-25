@@ -4,9 +4,9 @@
 #define MAX_QTY 64
 #define MAX_DURABILITY 10
 
-#include "BaseException.hpp"
-
 #include <string>
+
+#include "BaseException.hpp"
 using namespace std;
 
 class Item {
@@ -31,7 +31,7 @@ class Item {
     void SetType(string type);
     void SetQuantity(int quantity);
     void AddQuantity(int quantity);
-    void RemoveQuantity(int quantity);
+    virtual void RemoveQuantity(int quantity);
     virtual void Use();
     virtual void DisplayInfo();
     virtual void DisplayItem();

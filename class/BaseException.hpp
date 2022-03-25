@@ -54,7 +54,7 @@ class InvalidCommandException : public BaseException {
         this->cmd = cmd;
     }
     void printMessage() {
-        cout <<  cmd << " is an invalid command" << endl;
+        cout << cmd << " is an invalid command" << endl;
     }
 };
 
@@ -82,7 +82,8 @@ class InventoryFullException : public BaseException {
         this->item_name = item_name;
     }
     void printMessage() {
-        cout << "Inventory is full " << quantity << " " << item_name << " is thrown\n" << endl;
+        cout << "Inventory is full " << quantity << " " << item_name << " is thrown\n"
+             << endl;
     }
 };
 
@@ -95,17 +96,18 @@ class InvalidToolException : public BaseException {
         this->item_name = item_name;
     };
     void printMessage() {
-        cout << "NonTool " << item_name << " is not usable" << endl;
+        cout << item_name << " is not a tool" << endl;
     }
 };
 
 class CommandFailedException {
-private:
+    private:
     BaseException** exc;
     int idx;
-public:
+
+    public:
     CommandFailedException() {
-        exc = (BaseException**) malloc(sizeof(BaseException*));
+        exc = (BaseException**)malloc(sizeof(BaseException*));
         idx = 0;
     }
     void addException(BaseException* exc) {
@@ -113,7 +115,7 @@ public:
         idx++;
     }
     void addException(CommandFailedException cmd) {
-        for(int i = 0; i <= cmd.getIdx(); i++) {
+        for (int i = 0; i <= cmd.getIdx(); i++) {
             this->exc[idx] = cmd.exc[i];
             idx++;
         }
@@ -130,11 +132,11 @@ public:
     }
 };
 
-
 class CustomException : public BaseException {
-private:
+    private:
     string message;
-public:
+
+    public:
     CustomException(string message) {
         this->message = message;
     }

@@ -2,18 +2,17 @@
 #include <map>
 #include <vector>
 
+#include "BaseException.hpp"
 #include "Item.hpp"
 #include "NonTool.hpp"
 #include "Recipes.hpp"
 #include "Tool.hpp"
-#include "BaseException.hpp"
 #define MAX_QTY 64
 #define MAX_INVENTORY 27
 #define MAX_CRAFT 9
 #define CRAFT_BOUNDARY 3
 #define CRAFTING_SLOT(i, j, k, l) (i * CRAFT_BOUNDARY + j + MAX_INVENTORY + k * CRAFT_BOUNDARY + l)
 #define CRAFTING_INDEX(i) (MAX_INVENTORY + i)
-
 
 class Inventory {
     private:
@@ -23,7 +22,7 @@ class Inventory {
     public:
     Inventory();
     ~Inventory();
-    bool IsEmpty(int idx);
+    bool IsEmptySlot(int idx);
     bool IsTool(Item* item);
     void ReplaceSlot(int idx, Item* item);
     void Add(int idx, Item* item);
@@ -50,7 +49,8 @@ class Inventory {
 
     int FindItemNotFull(string item_name);
 
-    bool isFull();
+    bool IsFullInventory();
+    bool IsEmptyInventory();
     void GetItemCountInCrafting(int& item_count_tool, int& item_count_nontool);
 
     void Display();

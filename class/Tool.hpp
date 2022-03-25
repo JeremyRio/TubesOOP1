@@ -19,6 +19,7 @@ class Tool : public Item {
     void RemoveDurability(int durability);
     void DisplayInfo();  // check info item aja (dihapusin aja)
     void DisplayItem();
+    void RemoveQuantity(int quantity);
 };
 
 #endif

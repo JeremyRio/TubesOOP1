@@ -1,10 +1,10 @@
 #include "Inventory.hpp"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 Inventory::Inventory() {
     size = 0;
@@ -18,7 +18,7 @@ Inventory::~Inventory() {
     delete[] items;
 }
 
-bool Inventory::IsEmpty(int idx) {
+bool Inventory::IsEmptySlot(int idx) {
     return items[idx]->GetQuantity() == 0;
 }
 
@@ -51,15 +51,15 @@ void Inventory::Add(int idx, Item* item, int durability) {
 }
 
 void Inventory::Discard(int idx, int item_qty) {
-    if (IsEmpty(idx)) {
+    if (IsEmptySlot(idx)) {
         // throw Exception;
         // Tidak ada item dalam slot tersebut
-        BaseException *e = new CustomException("The selected item is empty");
+        BaseException* e = new CustomException("The selected item is empty");
         throw e;
     } else if (item_qty > items[idx]->GetQuantity()) {
         // throw Exception;
         // Jumlah item yang akan dibuang melebihi jumlah item yang ada
-        BaseException *e = new CustomException("The selected item is out of stock");
+        BaseException* e = new CustomException("The selected item is out of stock");
         throw e;
     } else {
         items[idx]->RemoveQuantity(item_qty);
@@ -72,7 +72,7 @@ void Inventory::Discard(int idx, int item_qty) {
 
 // Swap isi dari 2 tempat di inventory/crafting table
 void Inventory::Swap(int idxSource, int idxDest) {
-    Item* temp; 
+    Item* temp;
     if (IsTool(items[idxDest])) {
         temp = new Tool(*(Tool*)items[idxDest]);
     } else {
@@ -83,16 +83,16 @@ void Inventory::Swap(int idxSource, int idxDest) {
     delete temp;
 }
 
-bool Inventory::ValidIndex(int idx){
+bool Inventory::ValidIndex(int idx) {
     return (idx >= 0 && idx <= 35);
 }
 
 // Memindahkan suatu item dari suatu tempat ke tempat lain
 void Inventory::Move(int idxSource, int quantity, int idxDest) {
-    if (!ValidIndex(idxSource) || !ValidIndex(idxDest)){
+    if (!ValidIndex(idxSource) || !ValidIndex(idxDest)) {
         // throw Exception:
         // index out of bounds
-        BaseException *e = new IndexOutOfBoundsException;
+        BaseException* e = new IndexOutOfBoundsException;
         throw e;
         return;
     }
@@ -104,18 +104,18 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
     if (quantity < 0) {
         // throw Exception:
         // jumlah yang dipindahkan tidak boleh negatif
-        BaseException *e = new InvalidNumberException(quantity);
+        BaseException* e = new InvalidNumberException(quantity);
         throw e;
         return;
     }
     if (quantity > items[idxSource]->GetQuantity()) {
         // throw Exception:
         // jumlah yang diminta untuk dipindah lebih dari jumlah item yang tersedia
-        BaseException *e = new CustomException("The selected item is out of stock");
+        BaseException* e = new CustomException("The selected item is out of stock");
         throw e;
         return;
     }
-    if (IsEmpty(idxDest)) {  // Jika slot kosong, isi item
+    if (IsEmptySlot(idxDest)) {  // Jika slot kosong, isi item
         ReplaceSlot(idxDest, items[idxSource]);
         items[idxSource]->RemoveQuantity(quantity);
         if (items[idxSource]->GetQuantity() == 0 && idxSource < MAX_INVENTORY) {
@@ -127,7 +127,7 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         if (quantity != items[idxSource]->GetQuantity() && !IsTool(items[idxSource])) {
             // throw Exception:
             // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
-            BaseException *e = new CustomException("Item cannot be moved to different item");
+            BaseException* e = new CustomException("Item cannot be moved to different item");
             throw e;
             return;
         }
@@ -136,7 +136,7 @@ void Inventory::Move(int idxSource, int quantity, int idxDest) {
         if (quantity != items[idxSource]->GetQuantity()) {
             // throw Exception:
             // tidak dapat memindahkan sebagian item ke slot dengan item berbeda
-            BaseException *e = new CustomException("Item cannot be moved to different item");
+            BaseException* e = new CustomException("Item cannot be moved to different item");
             throw e;
             return;
         }
@@ -202,9 +202,9 @@ void Inventory::AddQuantity(int idx, int& remainder_qty) {
 }
 
 int Inventory::GetEmptySlot() {
-    if (!this->isFull()) {
+    if (!this->IsFullInventory()) {
         for (int i = 0; i < MAX_INVENTORY; i++) {
-            if (IsEmpty(i)) {
+            if (IsEmptySlot(i)) {
                 return i;
             }
         }
@@ -214,15 +214,19 @@ int Inventory::GetEmptySlot() {
 
 int Inventory::FindItemNotFull(string item_name) {
     for (int i = 0; i < MAX_INVENTORY; i++) {
-        if (items[i]->GetName() == item_name && items[i]->GetQuantity() < MAX_QTY && !IsEmpty(i)) {
+        if (items[i]->GetName() == item_name && items[i]->GetQuantity() < MAX_QTY && !IsEmptySlot(i)) {
             return i;
         }
     }
     return -1;
 }
 
-bool Inventory::isFull() {
+bool Inventory::IsFullInventory() {
     return this->size == MAX_INVENTORY;
+}
+
+bool Inventory::IsEmptyInventory() {
+    return this->size == 0;
 }
 
 void Inventory::GetItemCountInCrafting(int& item_count_tool, int& item_count_nontool) {
@@ -239,6 +243,7 @@ void Inventory::GetItemCountInCrafting(int& item_count_tool, int& item_count_non
 
 void Inventory::Display() {
     // Displaying Craft Table
+    cout << "   CRAFTING" << endl;
     for (int i = MAX_INVENTORY; i < 36; i++) {
         cout << "[C " << (i - 27) << "]";
         if (i == 29 || i == 32 || i == 35) {
@@ -247,6 +252,7 @@ void Inventory::Display() {
     }
     cout << endl;
     // Displaying Inventory Slot
+    cout << "                   INVENTORY" << endl;
     for (int i = 0; i < MAX_INVENTORY; i++) {
         cout << "[I";
         if (i < 10) {
@@ -264,15 +270,16 @@ void Inventory::Display() {
 void Inventory::Show() {
     Display();
     cout << endl
-         << "\nCraft Slot" << endl;
+         << "\n[CRAFT SLOT]" << endl;
     for (int i = MAX_INVENTORY; i < 36; i++) {
         if (items[i]->GetQuantity() > 0) {
             cout << "C" << (i - MAX_INVENTORY) << " - ";
             items[i]->DisplayItem();
         }
     }
+
     cout << endl
-         << "Inventory Slot" << endl;
+         << "[INVENTORY SLOT]" << endl;
     for (int i = 0; i < MAX_INVENTORY; i++) {
         if (items[i]->GetQuantity() > 0) {
             cout << "I" << i << " - ";
@@ -282,18 +289,17 @@ void Inventory::Show() {
 }
 
 void Inventory::Give(string item_name, int item_qty, map<string, Item*>& item_map, int durability) {
+    int initial_quantity = item_qty;
     if (item_map.find(item_name) != item_map.end()) {
-        bool stop = false;
         int idx_item;
-        while (item_qty > 0 && !stop) {
-            if (isFull()) {
+        while (item_qty > 0) {
+            if (IsFullInventory()) {
                 // throw Exception:
                 // inventory sudah full, item terbuang: {item_qty}
-                BaseException *e = new InventoryFullException(item_name, item_qty);
+                BaseException* e = new InventoryFullException(item_name, item_qty);
                 throw e;
-                stop = true;
             } else {
-                // jika item adalah tool
+                // Jika item berupa tool
                 if (IsTool(item_map[item_name])) {
                     idx_item = GetEmptySlot();
                     if (idx_item != -1) {
@@ -305,7 +311,7 @@ void Inventory::Give(string item_name, int item_qty, map<string, Item*>& item_ma
                         item_qty--;
                     }
                 } else {
-                    // jika item adalah nontool
+                    // Jika item berupa nontool
                     idx_item = FindItemNotFull(item_name);
                     if (idx_item == -1) {
                         idx_item = GetEmptySlot();
@@ -323,8 +329,8 @@ void Inventory::Give(string item_name, int item_qty, map<string, Item*>& item_ma
         }
     } else {
         // throw Exception:
-        // Tidak ada nama Item {item_name}
-        BaseException *e = new InvalidItemException(item_name);
+        // item not found: {item_name}
+        BaseException* e = new InvalidItemException(item_name);
         throw e;
     }
 }
@@ -332,13 +338,16 @@ void Inventory::Give(string item_name, int item_qty, map<string, Item*>& item_ma
 void Inventory::Use(string inventory_id) {
     int idx = GetIdx(inventory_id);
     if (inventory_id[0] == 'I' && idx >= 0 && idx <= 27) {
-        if (IsTool(items[idx]) && items[idx]->GetQuantity() > 0) {
+        if (items[idx]->GetQuantity() > 0) {
             items[idx]->Use();
+        } else {
+            BaseException* e = new CustomException("Selected item is empty");
+            throw e;
         }
     } else {
         // throw Exception:
         // tidak ada ID inventory {inventory_id}
-        BaseException *e = new InvalidIDException(inventory_id);
+        BaseException* e = new InvalidIDException(inventory_id);
         throw e;
     }
 }
@@ -350,8 +359,8 @@ void Inventory::Crafting(map<int, vector<Recipes>> recipe_map, map<string, Item*
     GetItemCountInCrafting(item_count_tool, item_count_nontool);
 
     // testing
-    cout << "item_count_tool: " << item_count_tool << endl;
-    cout << "item_count_nontool: " << item_count_nontool << endl;
+    // cout << "item_count_tool: " << item_count_tool << endl;
+    // cout << "item_count_nontool: " << item_count_nontool << endl;
     //
 
     // jika slot tidak valid dimana terdapat campuran antara tool dan non tool di slot crafting
@@ -407,15 +416,15 @@ bool Inventory::SubMatrix(int recipe_row, int recipe_col, Recipes recipe, map<st
                 for (int k = 0; k < recipe_row; k++) {
                     for (int l = 0; l < recipe_col; l++) {
                         int crafting_slot = CRAFTING_SLOT(i, j, k, l);
-                        if (!IsEmpty(crafting_slot)) Discard(crafting_slot, 1);
+                        if (!IsEmptySlot(crafting_slot)) Discard(crafting_slot, 1);
                     }
                 }
                 int craft_quantity = recipe.GetCraftQuantity();
                 string name = recipe.GetName();
                 // testing
-                recipe.DisplayInfo();
-                cout << "Crafting: " << name << endl;
-                cout << "Quantity: " << craft_quantity << endl;
+                // recipe.DisplayInfo();
+                // cout << "Crafting: " << name << endl;
+                // cout << "Quantity: " << craft_quantity << endl;
                 //
                 Give(name, craft_quantity, item_map);
                 return true;
@@ -458,23 +467,20 @@ bool Inventory::MatchRecipe(int i, int j, int recipe_row, int recipe_col, Recipe
 
 void Inventory::Exporting(string file_name) {
     string full = "";
-    string path = "exports/"  + file_name;
-    string convert1,convert2;
-    int temp1,temp2;
-    for (int i = 0; i < MAX_INVENTORY; i++){
+    string path = "exports/" + file_name;
+    string convert1, convert2;
+    int temp1, temp2;
+    for (int i = 0; i < MAX_INVENTORY; i++) {
         temp1 = items[i]->GetID();
-        if (IsTool(items[i])){
+        if (IsTool(items[i])) {
             temp2 = items[i]->GetDurability();
-        }
-        else {
+        } else {
             temp2 = items[i]->GetQuantity();
-        }   
+        }
         convert1 = to_string(temp1);
         convert2 = to_string(temp2);
         full += convert1 + ":" + convert2 + "\n";
-        cout << i<< endl;
     }
-    cout << full;
     ofstream MyFile(path);
     MyFile << full;
     MyFile.close();
