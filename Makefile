@@ -3,24 +3,23 @@ EXT_IN = in
 EXT_OUT = out
 EXT_ANS = ans
 EXECUTABLE_FILENAME = main
-ALL_SRCS := $(wildcard class/*.cpp)
-SRCS     := $(filter-out check.cpp, $(ALL_SRCS))
+ALL_SRCS := $(wildcard src/class/*.cpp)
 
 all: compile test check
 
 # Compile all cpp files except check.cpp
 compile:
-	g++ -std=c++17 -o $(EXECUTABLE_FILENAME) main.cpp $(ALL_SRCS)
+	g++ -std=c++17 -o ./bin/$(EXECUTABLE_FILENAME) ./src/main.cpp $(ALL_SRCS)
 
 # Test
-test: $(TC_FOLDER)/*.$(EXT_IN) $(EXECUTABLE_FILENAME)
+test: $(TC_FOLDER)/*.$(EXT_IN) ./bin/$(EXECUTABLE_FILENAME)
 	for inputfile in $(TC_FOLDER)/*.$(EXT_IN); do \
-		./$(EXECUTABLE_FILENAME) < $$inputfile; \
+		./bin/$(EXECUTABLE_FILENAME) < $$inputfile; \
 	done;
 
 # Check
-check: FORCE check.cpp
-	g++ -std=c++17 -o check check.cpp
-	./check
+check: FORCE ./src/check.cpp
+	g++ -std=c++17 -o ./bin/check ./src/check.cpp
+	./bin/check
 
 FORCE: ;
