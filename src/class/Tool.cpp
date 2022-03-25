@@ -65,11 +65,6 @@ void Tool::DisplayItem() {
 }
 
 void Tool::RemoveQuantity(int quantity) {
-    // if (this->GetQuantity() - quantity < 0) {
-    //     BaseException *e = new CustomException("Total quantity is less than 0");
-    //     throw e;
-    //     // throw Exception: item kekurangan
-    // }
     this->SetQuantity(this->GetQuantity() - quantity);
 
     if (this->GetQuantity() == 0) {

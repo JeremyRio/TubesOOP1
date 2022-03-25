@@ -65,7 +65,6 @@ void Inventory::Discard(int idx, int item_qty) {
         items[idx]->RemoveQuantity(item_qty);
         if (items[idx]->GetQuantity() == 0 && idx < MAX_INVENTORY) {
             this->size--;
-            this->Add(idx, new Item());
         }
     }
 }
@@ -431,7 +430,9 @@ bool Inventory::SubMatrix(int recipe_row, int recipe_col, Recipes recipe, map<st
                 for (int k = 0; k < recipe_row; k++) {
                     for (int l = 0; l < recipe_col; l++) {
                         int crafting_slot = CRAFTING_SLOT(i, j, k, l);
-                        if (!IsEmptySlot(crafting_slot)) Discard(crafting_slot, 1);
+                        if (!IsEmptySlot(crafting_slot)) {
+                            Discard(crafting_slot, 1);
+                        }
                     }
                 }
                 int craft_quantity = recipe.GetCraftQuantity();
