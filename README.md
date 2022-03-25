@@ -1,26 +1,40 @@
-# Minecraft-Template
+# Tugas Besar 1 IF2210 Pemrograman Berorientasi Objek
 
-Template repository for Tubes 1 IF2210 2021/2022. Feel free to replace this README with your own content.
+> Implementasi Minecraft™ _Crafting System_
 
-## What's Inside
-This template consists of:
-- config folder containing all the config files (items and recipes)
-- tests folder containing two sample test files (input and answer)
-- main.cpp containing the sample main code
-- check.cpp containing the code for checking
-- makefile for compiling and testing
+## Daftar Isi
+* [Deskripsi](#deskripsi)
+* [Requirements](#requirements)
+* [Penggunaan](#penggunaan)
+* [Penulis](#penulis)
 
-## Running the Makefile
-Make sure you are using Linux with C++17. WSL also works if you are using Windows.
+## Deskripsi
+Membuat sebuah pustaka serta program visualisasi data dalam bahasa Python yang dapat mengembalikan convex hull dari kumpulan data 2 dimensi (dapat dianggap kumpulan titik 2 dimensi) 
+
+## Requirements
+- [MinGW](https://code.visualstudio.com/docs/cpp/config-mingw) **(Untuk Windows)**
+- [Make](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows)
+
+## Penggunaan
+**[PENTING]** </br>
+Perlu menginstall MinGW untuk windows jika ingin menjalankan program, jika menggunakan linux maka jalankan command berikut:
 ```
 sudo apt-get install make g++
+```
+
+Pastikan direktori terminal menuju `TubesOOP1`
+Untuk menjalankan program, masukkan:
+```
+make run
+```
+Unuk menjalankan unit testing, masukkan:
+```
 make all
 ```
-Using the sample main file, it should return that 1 out of 2 tests passed.
 
-## Adding More Tests
-You can add more tests by adding more files to the tests folder. Tests consists of two files, input with "in" extension and answer with "ans" extension. Each test should have exactly one EXPORT command which exports the current inventory into an "out" file in the tests folder. Please refer to the sample tests. Checking will be done by comparing the answer file and the output file.
-
-As the test is done by comparing the output files, you can freely use standard output in your program.
-
-Automated testing will not work if you are using GUI (obviously).
+# Anggota
+13520025 / Fransiskus Davin Anwari
+13520082  / Jeremy Rionaldo Pasaribu
+13520097 / Angelica Winasta Sinisuka
+13520106 / Roby Purnomo
+13520127 / Adzka Ahmadetya Zaidan
