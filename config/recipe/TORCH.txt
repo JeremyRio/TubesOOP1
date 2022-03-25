@@ -1,0 +1,4 @@
+2 1
+COAL
+STICK
+TORCH 4
