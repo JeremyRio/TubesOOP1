@@ -156,11 +156,11 @@ void Inventory::Stack(int idxSource, int quantity, int idxDest) {
         items[idxSource]->RemoveQuantity(maxAmountToMove);
         items[idxDest]->AddQuantity(maxAmountToMove);
     } else {
+        items[idxDest]->AddQuantity(quantity);
         items[idxSource]->RemoveQuantity(quantity);
         if (items[idxSource]->GetQuantity() == 0 && idxSource < MAX_INVENTORY) {
             this->size--;
         }
-        items[idxDest]->AddQuantity(quantity);
     }
 }
 
