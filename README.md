@@ -9,7 +9,7 @@
 * [Penulis](#penulis)
 
 ## Deskripsi
-Membuat sebuah pustaka serta program visualisasi data dalam bahasa Python yang dapat mengembalikan convex hull dari kumpulan data 2 dimensi (dapat dianggap kumpulan titik 2 dimensi) 
+Membuat aplikasi berbasis Command Line Interface (CLI) untuk melakukan crafting seperti pada game Minecraft™ dalam bahasa C++
 
 ## Requirements
 - [MinGW](https://code.visualstudio.com/docs/cpp/config-mingw) **(Untuk Windows)**
