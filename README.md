@@ -27,14 +27,21 @@ Untuk menjalankan program, masukkan:
 ```
 make run
 ```
-Unuk menjalankan unit testing, masukkan:
+
+atau
+
+```
+./bin/main
+```
+
+Untuk menjalankan unit testing, masukkan:
 ```
 make all
 ```
 
-# Anggota
-13520025 / Fransiskus Davin Anwari
-13520082  / Jeremy Rionaldo Pasaribu
-13520097 / Angelica Winasta Sinisuka
-13520106 / Roby Purnomo
-13520127 / Adzka Ahmadetya Zaidan
+# Penulis
+- 13520025 / Fransiskus Davin Anwari <br\>
+- 13520082  / Jeremy Rionaldo Pasaribu
+- 13520097 / Angelica Winasta Sinisuka
+- 13520106 / Roby Purnomo
+- 13520127 / Adzka Ahmadetya Zaidan
