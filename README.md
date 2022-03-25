@@ -31,7 +31,7 @@ make run
 atau
 
 ```
-./bin/main
+./main
 ```
 
 Untuk menjalankan unit testing, masukkan:
